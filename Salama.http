@@ -1,0 +1,6 @@
+@Salama_HostAddress = http://localhost:5181
+
+GET {{Salama_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
