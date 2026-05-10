@@ -16,7 +16,7 @@ namespace Salama.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetPatientHistory(int id)
         {
             try

@@ -21,7 +21,14 @@ namespace Salama.Controllers
         {
             try
             {
-                var clinics = _context.Clinics.ToList();
+                var clinics = _context.Clinics
+                .Select(c => new {
+                    c.Id,
+                    c.ClinicName,
+                    c.Address,
+                    c.Phone,
+                    SpecializationName = c.Specialization.SpecializationName
+                }).ToList();
                 if (clinics == null || clinics.Count == 0)
                 {
                     return NotFound("No clinics found.");

@@ -20,10 +20,19 @@ namespace Salama.Controllers
         {
             try
             {
-                var doctors = _context.DoctorCertificates.ToList();
+                var doctors = _context.Doctors
+                    .Select(d => new
+                    {
+                        d.Id,
+                        d.About,
+                        d.Experience,
+                        d.SpecializationId,
+                        UserName = d.IdNavigation.Name
+                    })
+                    .ToList();
                 if (doctors == null || doctors.Count == 0)
                 {
-                    return NotFound("No doctors found.");
+                    return NotFound("No doctors == found.");
                 }
                 return Ok(doctors);
             }
@@ -40,7 +49,17 @@ namespace Salama.Controllers
         {
             try
             {
-                var doctor = _context.Doctors.Find(id);
+                var doctor = _context.Doctors
+                    .Where(d => d.Id == id)
+                    .Select(d => new
+                    {
+                        d.Id,
+                        d.About,
+                        d.Experience,
+                        d.SpecializationId,
+                        UserName = d.IdNavigation.Name
+                    })
+                    .FirstOrDefault();
                 if (doctor == null)
                 {
                     return NotFound($"Doctor with ID {id} not found.");
