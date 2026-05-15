@@ -7,30 +7,28 @@ namespace Salama.Controllers
     [Route("api/[Controller]")]
     [ApiController]
 
-    public class ClinicsController : ControllerBase
+    public class SpecializationsController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public ClinicsController(AppDbContext context)
+        public SpecializationsController(AppDbContext context)
         {
             _context = context;
         }
 
 
         [HttpGet]
-        public IActionResult GetAllClinics()
+        public IActionResult GetAllSpecializations()
         {
             try
             {
-                var clinics = _context.Clinics.Select(c => new {
-                    c.Id,
-                    c.ClinicName
-                }).ToList();
-                if (clinics == null || clinics.Count == 0)
+                var specializations = _context.Specializations.ToList();
+                if (specializations == null || specializations.Count == 0)
                 {
-                    return NotFound("No clinics found.");
+                    return NotFound("No specializations found.");
                 }
-                return Ok(clinics);
+                return Ok(specializations);
             }
+        
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
@@ -38,5 +36,7 @@ namespace Salama.Controllers
         }
 
 
-    }
+
+    }    
+    
 }
