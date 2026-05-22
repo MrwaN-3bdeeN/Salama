@@ -4,7 +4,7 @@ using Salama.Models;
 
 namespace Salama.Controllers
 {
-    [Route("api/[patient]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class PatientsController : ControllerBase
     {

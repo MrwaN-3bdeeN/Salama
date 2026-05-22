@@ -1,3 +1,4 @@
+using System.Data.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salama.Models;
@@ -106,5 +107,41 @@ namespace Salama.Controllers
                 return BadRequest(ex.Message);
             }
         }
+    
+
+        [HttpGet("{specializationId}/history")]
+        public IActionResult GetAppointmentBySpecialization(int specializationId)
+        {
+            try
+            {
+                var specializationHistory =
+                from s in _context.Specializations
+                join d in _context.Doctors on s.Id equals d.SpecializationId
+                join a in _context.Appointments on d.Id equals a.DoctorId
+                where s.Id == specializationId
+                select new
+                {
+                    a.Id,
+                    a.AppintmentDate,
+                    a.AppointmentOrder,
+                    a.AppointmentStatus,
+                    DoctorName = d.IdNavigation.Name,
+                    diagnosises = a.Diagnoses.Select(d => new
+                    {
+                        d.Id,
+                        d.Diagnosis1,
+                        d.DiagnosisDate
+                    })
+                };
+
+                return Ok(specializationHistory);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+
+            }
+        }
+    
     }
 }
