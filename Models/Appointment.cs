@@ -17,6 +17,10 @@ public partial class Appointment
 
     public int DoctorId { get; set; }
 
+    public int? ClinicId { get; set; }
+
+    public virtual Clinic? Clinic { get; set; }
+
     public virtual ICollection<Diagnosis> Diagnoses { get; set; } = new List<Diagnosis>();
 
     public virtual Doctor Doctor { get; set; } = null!;

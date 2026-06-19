@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salama.Models;
@@ -16,7 +17,7 @@ namespace Salama.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}/history")]
         public IActionResult GetPatientHistory(int id)
         {
             try
@@ -32,21 +33,12 @@ namespace Salama.Controllers
                     {
                         p.Id,
                         PatientName = p.IdNavigation.Name,
-                        Appointments = p.Appointments.Select(a => new
-                        {
-                            a.Id,
-                            a.AppintmentDate,
-                            a.AppointmentOrder,
-                            a.AppointmentStatus,
-                            DoctorName = a.Doctor.IdNavigation.Name
-                        }),
-                        Diagnoses = p.Diagnoses.Select(d => new
-                        {
-                            d.Id,
-                            d.Diagnosis1,
-                            d.DiagnosisDate,
-                            DoctorName = d.Doctor.IdNavigation.Name
-                        })
+                        Appointments = p.Appointments,
+                        a.DoctorId,
+                        a.AppintmentDate,
+                        a.AppointmentOrder,
+                        a.AppointmentStatus,
+                        DoctorName = a.Doctor.IdNavigation.Name,
                     };
                 if (patient == null)
                 {

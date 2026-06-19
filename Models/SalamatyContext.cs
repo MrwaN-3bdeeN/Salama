@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Salama.Models;
 
-public partial class AppDbContext : DbContext
+public partial class SalamatyContext : DbContext
 {
-    public AppDbContext()
+    public SalamatyContext()
     {
     }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options)
+    public SalamatyContext(DbContextOptions<SalamatyContext> options)
         : base(options)
     {
     }
@@ -61,10 +61,6 @@ public partial class AppDbContext : DbContext
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.AppointmentStatus).HasMaxLength(25);
-
-            entity.HasOne(d => d.Clinic).WithMany(p => p.Appointments)
-                .HasForeignKey(d => d.ClinicId)
-                .HasConstraintName("FK_Appointments_Clinics");
 
             entity.HasOne(d => d.Doctor).WithMany(p => p.Appointments)
                 .HasForeignKey(d => d.DoctorId)
@@ -216,6 +212,7 @@ public partial class AppDbContext : DbContext
                 .HasMaxLength(255)
                 .IsUnicode(false);
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.PasswordHash).HasMaxLength(100);
             entity.Property(e => e.ProfilePicturePath).HasMaxLength(500);
             entity.Property(e => e.Role).HasMaxLength(50);
         });

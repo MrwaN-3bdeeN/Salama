@@ -13,11 +13,13 @@ public partial class User
 
     public int Phone { get; set; }
 
-    public string Password { get; set; } = null!;
-
     public string Role { get; set; } = null!;
 
     public string? Address { get; set; }
+
+    public string? PasswordHash { get; set; }
+
+    public string? ProfilePicturePath { get; set; }
 
     public virtual Admin? Admin { get; set; }
 

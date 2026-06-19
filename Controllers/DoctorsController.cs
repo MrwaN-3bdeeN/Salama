@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Salama.Models;
@@ -9,6 +10,7 @@ namespace Salama.Controllers
 
     public class DoctorsController : ControllerBase
     {
+     
         private readonly AppDbContext _context;
         public DoctorsController(AppDbContext context)
         {
@@ -123,8 +125,6 @@ namespace Salama.Controllers
             return Ok(result);
         }
 
-
-
         
         [HttpGet("{specializationid}/specialization")]
         public IActionResult GetDoctorsBySpecialization(int specializationid)
@@ -160,7 +160,6 @@ namespace Salama.Controllers
         }
     
 
-
         [HttpGet("{id}/clinics")]
         public IActionResult GetClinicsByDoctorId(int id)
         {
@@ -178,5 +177,105 @@ namespace Salama.Controllers
             return Ok(clinics);
         
         }
+
+        [HttpGet("{DoctorId}/appointments/upcoming")]
+        public IActionResult GetDoctorUpcomingAppointments (int DoctorId)
+        {
+            try
+            {
+                var doctor = 
+                (
+                    from d in _context.Doctors
+                    join a in _context.Appointments on d.Id equals a.DoctorId
+                    join p in _context.Patients on a.PatientId equals p.Id
+                    where d.Id == DoctorId
+                    select new
+                    {
+                        DoctorName = d.IdNavigation.Name,
+                        d.Id,
+                        PatientName = p.IdNavigation.Name,
+                        PatientId = p.Id,
+                        AppointmentId = a.Id,
+                        a.AppintmentDate,
+                        a.AppointmentOrder,
+                        a.AppointmentStatus,
+                        Clinic_Name = a.Clinic.ClinicName,
+                        ClinicId = a.Clinic.Id
+                    }
+                ).FirstOrDefault();
+
+                if (doctor == null)
+                {
+                    return NotFound($"Doctor with Id {DoctorId} not found.");
+                }
+
+                DateTime appointmentDateTime = doctor.AppintmentDate.ToDateTime(TimeOnly.MinValue);
+                var remainingTime = appointmentDateTime - DateTime.Now;
+                if(remainingTime.TotalHours < 0)
+                {
+                    return BadRequest(new { Message = "Old appointment" });
+                }
+
+
+                return Ok(doctor);
+            }
+
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }    
+        }
+
+
+        
+        [HttpGet("{DoctorId}/appointments/completed")]
+        public IActionResult GetDoctorCompletedAppointments (int DoctorId)
+        {
+            try
+            {
+                var doctor = 
+                (
+                    from d in _context.Doctors
+                    join a in _context.Appointments on d.Id equals a.DoctorId
+                    join p in _context.Patients on a.PatientId equals p.Id
+                    where d.Id == DoctorId
+                    select new
+                    {
+                        DoctorName = d.IdNavigation.Name,
+                        d.Id,
+                        PatientName = p.IdNavigation.Name,
+                        PatientId = p.Id,
+                        AppointmentId = a.Id,
+                        a.AppintmentDate,
+                        a.AppointmentOrder,
+                        a.AppointmentStatus,
+                        Clinic_Name = a.Clinic.ClinicName,
+                        ClinicId = a.Clinic.Id
+                    }
+                ).FirstOrDefault();
+
+                if (doctor == null)
+                {
+                    return NotFound($"Doctor with Id {DoctorId} not found.");
+                }
+
+                DateTime appointmentDateTime = doctor.AppintmentDate.ToDateTime(TimeOnly.MinValue);
+                var remainingTime = appointmentDateTime - DateTime.Now;
+                if(remainingTime.TotalHours > 0)
+                {
+                    return BadRequest(new { Message = "Upcoming appointment" });
+                }
+
+
+                return Ok(doctor);
+            }
+
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }    
+        }
+
+
     }
 }

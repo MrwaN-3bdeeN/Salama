@@ -21,14 +21,28 @@ namespace Salama.Controllers
         {
             try
             {
-                var specializations = _context.Specializations.ToList();
-                if (specializations == null || specializations.Count == 0)
+                var specializations =
+                from s in _context.Specializations
+                join c in _context.Clinics on s.Id equals c.SpecializationId
+                join d in _context.Doctors on s.Id equals d.SpecializationId
+                select new
+                {
+                    s.Id,
+                    SpecializationName = s.SpecializationName,
+                    ClinicName = c.ClinicName,
+                    ClinicId = c.Id,
+                    DoctorName = d.IdNavigation.Name,
+                    DoctorId = d.Id
+                };
+                
+                
+                if (specializations == null || (int)specializations.Count() == 0)
                 {
                     return NotFound("No specializations found.");
                 }
+
                 return Ok(specializations);
             }
-        
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
