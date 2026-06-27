@@ -35,7 +35,7 @@ A full-stack clinic management system with an ASP.NET Core 10 Web API backend an
 │       │   ├── SpecializationsController.cs
 │       │   └── PatientsController.cs
 │       ├── Models/               # EF Core entities + DTOs
-│       ├── Dat/                  # AppDbContext
+│       ├── Data/                 # AppDbContext
 │       ├── Helpers/              # JWT config
 │       └── Program.cs
 ├── Frontend/
@@ -153,3 +153,117 @@ Profile, appointments (with filter), cancel (>72h rule), diagnoses, full history
 ## License
 
 Private project.
+
+---
+
+## Deploy to Azure (Free Tier)
+
+### Step 1: Create Azure Account
+
+1. Go to https://azure.microsoft.com/free
+2. Sign up for free ($200 credit for 30 days, free services continue after)
+
+### Step 2: Create SQL Database
+
+1. Go to Azure Portal → https://portal.azure.com
+2. Click **Create a resource** → **SQL Database**
+3. Fill in:
+   - **Resource group**: Create new → `salama-rg`
+   - **Database name**: `Salamaty`
+   - **Server**: Create new → pick a name like `salama-sql server`, set admin login/password
+   - **Compute + storage**: Configure → select **Basic** (cheapest, ~$5/month, or look for free tier)
+4. Click **Review + Create** → **Create**
+5. Once deployed, go to the SQL server → **Networking** → check **Allow Azure services** → Save
+6. Note down: **Server name**, **Admin login**, **Password**
+
+### Step 3: Create App Service (API Backend)
+
+1. Azure Portal → **Create a resource** → **Web App**
+2. Fill in:
+   - **Resource group**: `salama-rg` (same as above)
+   - **Name**: `salama-api` (will be your URL: `salama-api.azurewebsites.net`)
+   - **Runtime stack**: .NET 10
+   - **Operating System**: Windows
+   - **Region**: East US or closest to you
+3. Click **Review + Create** → **Create**
+4. Once deployed, go to the App Service → **Configuration** → **Application settings**
+5. Add a new setting:
+   - **Name**: `DefaultConnection`
+   - **Value**: `Server=tcp:YOUR_SERVER.database.windows.net,1433;Database=Salamaty;User Id=YOUR_USERNAME;Password=YOUR_PASSWORD;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;`
+6. Also set `SCM_DO_BUILD_DURING_DEPLOYMENT` = `true`
+7. Click **Save**
+
+### Step 4: Deploy Backend Code
+
+**Option A — GitHub Actions (recommended):**
+
+1. Go to your App Service → **Deployment Center**
+2. Select **GitHub** → authorize
+3. Select your repo → branch: `main`
+4. Set **Application stack**: .NET 10
+5. Save — it will auto-deploy on every push
+
+**Option B — Manual deploy:**
+
+1. Install Azure CLI: https://docs.microsoft.com/cli/azure/install-azure-cli
+2. Run:
+   ```bash
+   az login
+   cd Backend/Salama
+   az webapp deploy --resource-group salama-rg --name salama-api --src-path bin/Release/net10.0/publish.zip --type zip
+   ```
+
+### Step 5: Create Static Site (Frontend)
+
+1. Azure Portal → **Create a resource** → **Static Web App**
+2. Fill in:
+   - **Resource group**: `salama-rg`
+   - **Name**: `salama-frontend`
+   - **Source**: GitHub
+   - **Organization/Repository**: your repo
+   - **Branch**: main
+   - **Build Preset**: Custom
+   - **App location**: `/Frontend`
+   - **Api location**: (leave empty)
+   - **Output location**: `/`
+3. Click **Create**
+4. The frontend will be live at `https://salama-frontend.azurestaticapps.net`
+
+### Step 6: Create Admin User
+
+After deployment, you need to create an admin user directly in Azure SQL:
+
+1. Go to Azure SQL Database → **Query editor** (in portal)
+2. Login with your admin credentials
+3. Run:
+   ```sql
+   -- Create admin user (password is hashed with BCrypt)
+   INSERT INTO Users (Name, Email, Phone, PasswordHash, Role, CreatedAt)
+   VALUES ('Admin', 'admin@salama.com', '01012345678',
+           '$2a$11$...hashed_password...', 'Admin', GETDATE());
+   ```
+   
+   To generate the hashed password, run locally:
+   ```bash
+   dotnet run --project Backend/Salama
+   # Then in a browser console on the signup page:
+   # BCrypt.hashSync('YourAdminPassword', 10)
+   ```
+
+### Your URLs
+
+| Service | URL |
+|---------|-----|
+| API Backend | `https://salama-api.azurewebsites.net` |
+| Frontend | `https://salama-frontend.azurestaticapps.net` |
+| Swagger (dev only) | `https://salama-api.azurewebsites.net/swagger` |
+
+### Updating the API URL
+
+If your API URL is different from `salama-api.azurewebsites.net`, update it in `Frontend/assets/js/api.js`:
+
+```javascript
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+  ? 'http://localhost:5181/api'
+  : 'https://YOUR-API-NAME.azurewebsites.net/api';
+```

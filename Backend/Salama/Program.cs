@@ -17,7 +17,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddSwaggerGen();
+}
+
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 var jwtSettings = builder.Configuration.GetSection("JWT").Get<JWT>();
 builder.Services.AddAuthentication(options =>
@@ -42,14 +47,11 @@ builder.Services.AddAuthentication(options =>
     });
 
 var app = builder.Build();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
 }
 
