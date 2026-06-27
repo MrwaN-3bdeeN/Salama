@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Appointment - Salama</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/dashboard.css" rel="stylesheet">
+</head>
+
+<body class="appointment-page">
+
+  <header id="header" class="header fixed-top">
+
+    <div class="branding d-flex align-items-cente">
+
+      <div class="container position-relative d-flex align-items-center justify-content-between">
+        <a href="index.html" class="logo d-flex align-items-center">
+          <!-- Uncomment the line below if you also wish to use an image logo -->
+          <!-- <img src="assets/img/logo.webp" alt=""> -->
+          <h1 class="sitename">Salama</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu" aria-label="Main navigation">
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="departments.html">Departments</a></li>
+            <li><a href="clinics.html">Clinics</a></li>
+            <li><a href="doctors.html">Doctors</a></li>
+            <ul id="nav-auth" class="d-flex align-items-center list-unstyled mb-0 gap-2"></ul>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" style="position:absolute;right:0;top:50%;transform:translateY(-50%)"><i class="bi" id="themeIcon"></i></button>
+
+      </div>
+
+    </div>
+
+  </header>
+
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1 class="heading-title">Appointment</h1>
+              <p class="mb-0">
+                Odio et unde deleniti. Deserunt numquam exercitationem. Officiis quo
+                odio sint voluptas consequatur ut a odio voluptatem. Sit dolorum
+                debitis veritatis natus dolores. Quasi ratione sint. Sit quaerat
+                ipsum dolorem.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <div class="container">
+          <ol>
+            <li><a href="index.html">Home</a></li>
+            <li class="current">Appointment</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <!-- Appointmnet Section -->
+    <section id="appointmnet" class="appointmnet section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="booking-wrapper">
+              <div class="booking-header text-center" data-aos="fade-up" data-aos-delay="200">
+                <h2>Schedule Your Appointment</h2>
+                <p>Book your medical appointment in just a few simple steps. Our experienced healthcare professionals
+                  are ready to provide you with the best care possible.</p>
+              </div>
+
+              <div class="booking-steps" data-aos="fade-up" data-aos-delay="300">
+                <div class="step">
+                  <div class="step-icon">
+                    <i class="bi bi-calendar-check"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Select Service</h4>
+                    <p>Choose the medical service you need</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-icon">
+                    <i class="bi bi-clock"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Pick Date &amp; Time</h4>
+                    <p>Select your preferred appointment slot</p>
+                  </div>
+                </div>
+                <div class="step">
+                  <div class="step-icon">
+                    <i class="bi bi-person-check"></i>
+                  </div>
+                  <div class="step-content">
+                    <h4>Confirm Details</h4>
+                    <p>Provide your information and confirm</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="appointment-form" data-aos="fade-up" data-aos-delay="400">
+                <form id="appointmentForm" class="php-email-form">
+                  <div class="row gy-4">
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Department / Specialization</label>
+                      <select name="specialization" id="specSelect" class="form-select" required>
+                        <option value="">Select Department</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Doctor</label>
+                      <select name="doctor" id="doctorSelect" class="form-select" required>
+                        <option value="">Select Doctor</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Clinic</label>
+                      <select name="clinic" id="clinicSelect" class="form-select">
+                        <option value="">Select Clinic (optional)</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label fw-semibold">Appointment Date</label>
+                      <input type="date" name="date" id="apptDate" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label fw-semibold">Diagnosis / Notes (optional)</label>
+                      <textarea name="diagnosis" id="apptDiagnosis" class="form-control" rows="4" placeholder="Describe your symptoms or reason for visit"></textarea>
+                    </div>
+                    <div class="col-12">
+                      <div id="apptLoading" class="loading d-none">Booking...</div>
+                      <div id="apptError" class="error-message d-none"></div>
+                      <div id="apptSuccess" class="sent-message d-none">Your appointment has been scheduled. Thank you!</div>
+                      <button type="submit" class="btn-book" id="apptBtn">Book Appointment Now</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div class="emergency-info" data-aos="fade-up" data-aos-delay="500">
+                <p><i class="bi bi-exclamation-triangle"></i> For medical emergencies, please call <strong>911</strong>
+                  or go to the nearest emergency room.</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- /Appointmnet Section -->
+
+  </main>
+
+  <footer id="footer" class="footer-16 footer position-relative">
+  <div class="container">
+    <div class="footer-main" data-aos="fade-up" data-aos-delay="100">
+      <div class="row align-items-start">
+        <div class="col-lg-5">
+          <div class="brand-section">
+            <a href="index.html" class="logo d-flex align-items-center mb-4"><span class="sitename">Salama</span></a>
+            <p class="brand-description">Providing exceptional healthcare services with experienced medical professionals dedicated to your well-being.</p>
+            <div class="contact-info mt-5">
+              <div class="contact-item"><i class="bi bi-geo-alt"></i><span>123 Medical Center Blvd, Health District</span></div>
+              <div class="contact-item"><i class="bi bi-telephone"></i><span>+1 (555) 987-6543</span></div>
+              <div class="contact-item"><i class="bi bi-envelope"></i><span>contact@salama.com</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="footer-nav-wrapper">
+            <div class="row">
+              <div class="col-6 col-lg-3">
+                <div class="nav-column"><h6>Quick Links</h6><nav class="footer-nav" aria-label="Footer navigation"><a href="about.html">About Us</a><a href="doctors.html">Our Doctors</a><a href="departments.html">Departments</a><a href="clinics.html">Clinics</a></nav></div>
+              </div>
+              <div class="col-6 col-lg-3">
+                <div class="nav-column"><h6>Services</h6><nav class="footer-nav" aria-label="Footer navigation"><a href="departments.html">Cardiology</a><a href="departments.html">Neurology</a><a href="departments.html">Pediatrics</a><a href="departments.html">Oncology</a></nav></div>
+              </div>
+              <div class="col-6 col-lg-3">
+                <div class="nav-column"><h6>Account</h6><nav class="footer-nav" aria-label="Footer navigation"><a href="login.html">Sign In</a><a href="signup.html">Sign Up</a></nav></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="bottom-content" data-aos="fade-up" data-aos-delay="300">
+        <div class="row align-items-center">
+          <div class="col-lg-6"><div class="copyright"><p>&copy; <span class="sitename">Salama</span>. All rights reserved.</p></div></div>
+          <div class="col-lg-6"><div class="legal-links"><a href="privacy.html">Privacy Policy</a><a href="terms.html">Terms of Service</a></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  <!-- Scroll Top -->
+  <a href="#!" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script>
+    let allDoctors = [];
+    let allClinics = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      authNav();
+      loadAppointmentData();
+      setupAppointmentForm();
+    });
+
+    async function loadAppointmentData() {
+      try {
+        const [specs, doctors, clinics] = await Promise.all([
+          Api.getSpecializations(),
+          Api.getDoctors(),
+          Api.getClinics()
+        ]);
+
+        allDoctors = doctors;
+        allClinics = clinics;
+
+        const specSelect = document.getElementById('specSelect');
+        specs.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.specializationName;
+          specSelect.appendChild(opt);
+        });
+
+        const doctorSelect = document.getElementById('doctorSelect');
+        doctors.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = `Dr. ${d.userName} - ${d.specializationName || 'General'}`;
+          opt.dataset.spec = d.specializationId || '';
+          doctorSelect.appendChild(opt);
+        });
+
+        // If doctor ID is in URL, pre-select
+        const params = new URLSearchParams(window.location.search);
+        const doctorId = params.get('doctor');
+        if (doctorId) {
+          doctorSelect.value = doctorId;
+          filterClinics(doctorId);
+        }
+
+        // Filter doctors by specialization
+        specSelect.addEventListener('change', () => {
+          const specId = specSelect.value;
+          Array.from(doctorSelect.options).forEach(opt => {
+            if (!opt.value) return;
+            opt.style.display = (!specId || opt.dataset.spec === specId) ? '' : 'none';
+          });
+          doctorSelect.value = '';
+        });
+
+        // Filter clinics when doctor changes
+        doctorSelect.addEventListener('change', () => {
+          filterClinics(doctorSelect.value);
+        });
+
+        // Set min date to today
+        const dateInput = document.getElementById('apptDate');
+        dateInput.min = new Date().toISOString().split('T')[0];
+
+      } catch (e) {
+        console.log('Could not load appointment data:', e);
+      }
+    }
+
+    function filterClinics(doctorId) {
+      const clinicSelect = document.getElementById('clinicSelect');
+      clinicSelect.innerHTML = '<option value="">Select Clinic (optional)</option>';
+      // For now, show all clinics since we don't have doctor-clinic mapping in the public API
+      allClinics.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.clinicName;
+        clinicSelect.appendChild(opt);
+      });
+    }
+
+    function setupAppointmentForm() {
+      const form = document.getElementById('appointmentForm');
+      if (!form) return;
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const user = Api.getUser();
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const btn = document.getElementById('apptBtn');
+        const loading = document.getElementById('apptLoading');
+        const error = document.getElementById('apptError');
+        const success = document.getElementById('apptSuccess');
+
+        const doctorId = parseInt(form.doctor.value);
+        const date = form.date.value;
+
+        if (!doctorId || !date) {
+          error.className = 'error-message';
+          error.textContent = 'Please select a doctor and date.';
+          return;
+        }
+
+        btn.disabled = true;
+        loading.className = 'loading';
+        error.className = 'error-message d-none';
+        success.className = 'sent-message d-none';
+
+        try {
+          await Api.bookAppointment({
+            doctorId: doctorId,
+            patientId: user.id,
+            clinicId: form.clinic.value ? parseInt(form.clinic.value) : null,
+            diagnosis: form.diagnosis.value || '',
+            appointmentDate: date
+          });
+
+          loading.className = 'loading d-none';
+          success.className = 'sent-message';
+          form.reset();
+        } catch (err) {
+          loading.className = 'loading d-none';
+          error.className = 'error-message';
+          error.textContent = err.message || 'Booking failed. Please try again.';
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+  </script>
+
+</body>
+
+</html>

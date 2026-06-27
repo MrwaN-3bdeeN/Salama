@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Patient Dashboard - Salama</title>
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+  <div class="dash-wrapper" id="dashWrapper">
+    <!-- Sidebar -->
+    <aside class="dash-sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <h4><i class="bi bi-heart-pulse"></i> Salama</h4>
+        <small>Patient Dashboard</small>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section">Menu</div>
+        <a href="#" data-section="dashboard" class="active">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a href="#" data-section="book">
+          <i class="bi bi-calendar-plus"></i> Book Appointment
+        </a>
+        <a href="#" data-section="appointments">
+          <i class="bi bi-calendar-check"></i> My Appointments
+        </a>
+        <a href="#" data-section="diagnoses">
+          <i class="bi bi-clipboard2-pulse"></i> My Diagnoses
+        </a>
+        <a href="#" data-section="history">
+          <i class="bi bi-clock-history"></i> Medical History
+        </a>
+        <div class="sidebar-section">Account</div>
+        <a href="#" data-section="profile">
+          <i class="bi bi-person-circle"></i> My Profile
+        </a>
+        <a href="#" onclick="Api.logout(); return false;">
+          <i class="bi bi-box-arrow-left"></i> Logout
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dash-main">
+      <!-- Top Bar -->
+      <div class="dash-topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" onclick="if(window.innerWidth<992){document.getElementById('sidebar').classList.toggle('show')}else{document.getElementById('dashWrapper').classList.toggle('sidebar-collapsed')}">
+            <i class="bi bi-list"></i>
+          </button>
+          <h5 id="pageTitle">Dashboard</h5>
+        </div>
+        <div class="topbar-right">
+          <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode"><i class="bi" id="themeIcon"></i></button>
+          <div class="user-badge">
+            <i class="bi bi-person-circle"></i>
+            <span id="userName">Patient</span>
+          </div>
+          <button class="btn-logout" onclick="Api.logout()">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="dash-content" id="contentArea">
+        <!-- Sections are injected here by patient.js -->
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/theme.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/patient.js"></script>
+  <script>
+    if (!Api.requireAuth('Patient')) {
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      initPatient();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Backend
+Backend/Salama/bin/
+Backend/Salama/obj/
+Backend/Salama/.vs/
+Backend/Salama/*.log
+Backend/Salama/*.db
+
+# Frontend
+Frontend/node_modules/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user

@@ -1,0 +1,165 @@
+/* ─── AUTH PAGES ──────────────────────────────────────────────── */
+.auth-wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d6efd 0%,#0a58ca 100%);padding:2rem}
+.auth-card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.15);width:100%;max-width:440px;padding:2.5rem}
+.auth-card .logo{text-align:center;margin-bottom:1.5rem}
+.auth-card .logo h2{font-weight:700;color:#0d6efd;margin:0}
+.auth-card .logo p{color:#6c757d;font-size:.9rem;margin:0}
+.auth-card h3{text-align:center;font-weight:600;margin-bottom:1.5rem}
+.auth-card .form-label{font-weight:500;color:#495057}
+.auth-card .form-control,.auth-card .form-select{border-radius:8px;padding:.6rem 1rem;border:1px solid #dee2e6}
+.auth-card .form-control:focus,.auth-card .form-select:focus{border-color:#0d6efd;box-shadow:0 0 0 .2rem rgba(13,110,253,.15)}
+.auth-card .btn-primary{width:100%;padding:.7rem;border-radius:8px;font-weight:600}
+.auth-card .auth-footer{text-align:center;margin-top:1.5rem;font-size:.9rem;color:#6c757d}
+.auth-card .auth-footer a{color:#0d6efd;text-decoration:none;font-weight:500}
+.auth-card .alert{border-radius:8px;font-size:.9rem}
+
+/* ─── DARK MODE ─────────────────────────────────────────────── */
+[data-theme="dark"] body{background:#1a1d2e;color:#e2e8f0}
+[data-theme="dark"] .dash-main{background:#1a1d2e}
+[data-theme="dark"] .dash-topbar{background:#1e2235;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+[data-theme="dark"] .dash-topbar .topbar-left h5{color:#e2e8f0}
+[data-theme="dark"] .dash-topbar .user-badge{background:rgba(255,255,255,.08);color:#e2e8f0}
+[data-theme="dark"] .dash-topbar .user-badge i{color:#60a5fa}
+[data-theme="dark"] .dash-topbar .btn-logout{color:#94a3b8;border-color:rgba(255,255,255,.15)}
+[data-theme="dark"] .dash-topbar .btn-logout:hover{background:#dc3545;color:#fff;border-color:#dc3545}
+[data-theme="dark"] .dash-topbar .sidebar-toggle{color:#e2e8f0}
+[data-theme="dark"] .dash-topbar .sidebar-toggle:hover{background:rgba(255,255,255,.08)}
+[data-theme="dark"] .stat-card{background:#1e2235;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+[data-theme="dark"] .stat-card .stat-info p{color:#94a3b8}
+[data-theme="dark"] .dash-card{background:#1e2235;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+[data-theme="dark"] .dash-card .card-header-custom{border-bottom-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .dash-card .card-header-custom h5{color:#e2e8f0}
+[data-theme="dark"] .dash-card table th{background:#252a3e;color:#94a3b8;border-bottom-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .dash-card table td{color:#cbd5e1}
+[data-theme="dark"] .dash-card .card-body-custom .text-muted{color:#64748b!important}
+[data-theme="dark"] .form-control,[data-theme="dark"] .form-select{background:#252a3e;border-color:rgba(255,255,255,.1);color:#e2e8f0}
+[data-theme="dark"] .form-control:focus,[data-theme="dark"] .form-select:focus{background:#2d3348;color:#e2e8f0;box-shadow:0 0 0 .2rem rgba(96,165,250,.25)}
+[data-theme="dark"] .form-label{color:#94a3b8}
+[data-theme="dark"] .modal-content{background:#1e2235;color:#e2e8f0}
+[data-theme="dark"] .modal-header{border-bottom-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .modal-footer{border-top-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .modal-body .form-control,[data-theme="dark"] .modal-body .form-select{background:#252a3e;border-color:rgba(255,255,255,.1);color:#e2e8f0}
+[data-theme="dark"] .modal-body label,[data-theme="dark"] .modal-body .form-label{color:#94a3b8}
+[data-theme="dark"] .btn-close{filter:invert(1)}
+[data-theme="dark"] .alert-danger{background:rgba(220,53,69,.15);color:#fca5a5;border-color:rgba(220,53,69,.3)}
+[data-theme="dark"] .alert-success{background:rgba(25,135,84,.15);color:#86efac;border-color:rgba(25,135,84,.3)}
+[data-theme="dark"] .empty-state{color:#64748b}
+[data-theme="dark"] .badge-status{opacity:.9}
+[data-theme="dark"] .btn-primary{background:#3b82f6;border-color:#3b82f6}
+[data-theme="dark"] .btn-outline-primary{color:#60a5fa;border-color:#3b82f6}
+[data-theme="dark"] .btn-outline-primary:hover{background:#3b82f6;color:#fff}
+[data-theme="dark"] .btn-outline-secondary{color:#94a3b8;border-color:rgba(255,255,255,.2)}
+[data-theme="dark"] .btn-outline-secondary:hover{background:rgba(255,255,255,.1);color:#e2e8f0}
+[data-theme="dark"] .btn-secondary{background:#475569;border-color:#475569}
+[data-theme="dark"] .btn-success{background:#16a34a;border-color:#16a34a}
+[data-theme="dark"] .btn-danger{background:#dc2626;border-color:#dc2626}
+[data-theme="dark"] .table-hover tbody tr:hover{background:rgba(255,255,255,.03)}
+[data-theme="dark"] .dash-card .badge-scheduled{background:rgba(59,130,246,.2);color:#93c5fd}
+[data-theme="dark"] .dash-card .badge-completed{background:rgba(34,197,94,.2);color:#86efac}
+[data-theme="dark"] .dash-card .badge-cancelled{background:rgba(239,68,68,.2);color:#fca5a5}
+[data-theme="dark"] .dash-card .card-header-custom .form-select{background:#252a3e;border-color:rgba(255,255,255,.1);color:#e2e8f0}
+[data-theme="dark"] .card-header-custom .form-select option{background:#252a3e;color:#e2e8f0}
+[data-theme="dark"] .dash-content{color:#e2e8f0}
+[data-theme="dark"] .text-muted{color:#64748b!important}
+[data-theme="dark"] h3,[data-theme="dark"] h4,[data-theme="dark"] h5{color:#e2e8f0}
+[data-theme="dark"] .alert-success{color:#86efac}
+[data-theme="dark"] .alert-danger{color:#fca5a5}
+[data-theme="dark"] .btn-primary{color:#fff!important}
+[data-theme="dark"] .modal-backdrop.show{background:rgba(0,0,0,.6)}
+[data-theme="dark"] .modal-body .rounded{background:#252a3e!important}
+[data-theme="dark"] .modal-body .rounded strong{color:#e2e8f0}
+[data-theme="dark"] .modal-body .rounded small{color:#94a3b8}
+
+/* ─── THEME TOGGLE BUTTON ────────────────────────────────────── */
+.theme-toggle{background:none;border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:.35rem .6rem;cursor:pointer;font-size:1rem;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.theme-toggle:hover{background:rgba(0,0,0,.05)}
+[data-theme="dark"] .theme-toggle{color:#e2e8f0;border-color:rgba(255,255,255,.15)}
+[data-theme="dark"] .theme-toggle:hover{background:rgba(255,255,255,.08)}
+
+/* ─── DASHBOARD LAYOUT ───────────────────────────────────────── */
+.dash-wrapper{display:flex;min-height:100vh}
+.dash-sidebar{width:260px;background:linear-gradient(180deg,#1a1f36 0%,#0f1225 100%);color:#fff;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:1000;overflow-y:auto;transition:transform .3s}
+.dash-sidebar .sidebar-brand{padding:1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.dash-sidebar .sidebar-brand h4{margin:0;font-weight:700;font-size:1.1rem;color:#fff}
+.dash-sidebar .sidebar-brand small{color:rgba(255,255,255,.5);font-size:.75rem}
+.dash-sidebar .sidebar-nav{padding:1rem 0}
+.dash-sidebar .sidebar-nav a{display:flex;align-items:center;padding:.7rem 1.25rem;color:rgba(255,255,255,.65);text-decoration:none;transition:all .2s;font-size:.9rem;border-left:3px solid transparent}
+.dash-sidebar .sidebar-nav a:hover{color:#fff;background:rgba(255,255,255,.05)}
+.dash-sidebar .sidebar-nav a.active{color:#fff;background:rgba(13,110,253,.2);border-left-color:#0d6efd}
+.dash-sidebar .sidebar-nav a i{width:20px;margin-right:.75rem;font-size:1rem}
+.dash-sidebar .sidebar-section{padding:0 1.25rem;margin:.75rem 0 .25rem;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.35)}
+
+.dash-main{margin-left:260px;flex:1;background:#f4f6f9;min-height:100vh}
+.dash-topbar{background:#fff;padding:.75rem 1.5rem;display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.08);position:sticky;top:0;z-index:100}
+.dash-topbar .topbar-left{display:flex;align-items:center;gap:1rem}
+.dash-topbar .topbar-left h5{margin:0;font-weight:600;font-size:1rem}
+.dash-topbar .topbar-right{display:flex;align-items:center;gap:1rem}
+.dash-topbar .user-badge{display:flex;align-items:center;gap:.5rem;padding:.4rem .8rem;background:#f0f4ff;border-radius:20px;font-size:.85rem}
+.dash-topbar .user-badge i{color:#0d6efd}
+.dash-topbar .btn-logout{background:none;border:1px solid #dee2e6;border-radius:8px;padding:.4rem .8rem;font-size:.85rem;cursor:pointer;color:#6c757d;transition:all .2s}
+.dash-topbar .btn-logout:hover{background:#dc3545;color:#fff;border-color:#dc3545}
+
+.dash-content{padding:1.5rem}
+
+/* ─── STAT CARDS ─────────────────────────────────────────────── */
+.stat-card{background:#fff;border-radius:12px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.06);display:flex;align-items:center;gap:1rem;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.stat-card .stat-icon.blue{background:#e7f1ff;color:#0d6efd}
+.stat-card .stat-icon.green{background:#d1e7dd;color:#198754}
+.stat-card .stat-icon.orange{background:#fff3cd;color:#ffc107}
+.stat-card .stat-icon.red{background:#f8d7da;color:#dc3545}
+.stat-card .stat-icon.purple{background:#e8daef;color:#6f42c1}
+.stat-card .stat-info h3{margin:0;font-weight:700;font-size:1.5rem}
+.stat-card .stat-info p{margin:0;font-size:.8rem;color:#6c757d}
+
+/* ─── TABLE CARDS ────────────────────────────────────────────── */
+.dash-card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dash-card .card-header-custom{padding:1rem 1.25rem;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+.dash-card .card-header-custom h5{margin:0;font-weight:600;font-size:1rem}
+.dash-card .card-body-custom{padding:1.25rem}
+.dash-card table{margin:0}
+.dash-card table th{font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.5px;color:#6c757d;border-bottom-width:1px;background:#fafbfc}
+.dash-card table td{vertical-align:middle;font-size:.9rem}
+.dash-card .badge-status{padding:.3rem .6rem;border-radius:6px;font-size:.75rem;font-weight:500}
+.badge-scheduled{background:#e7f1ff;color:#0d6efd}
+.badge-completed{background:#d1e7dd;color:#198754}
+.badge-cancelled{background:#f8d7da;color:#dc3545}
+
+/* ─── MODAL ──────────────────────────────────────────────────── */
+.modal-content{border-radius:12px;border:none}
+.modal-header{border-bottom:1px solid #f0f0f0}
+.modal-title{font-weight:600}
+.modal-footer{border-top:1px solid #f0f0f0}
+
+/* ─── MISC ───────────────────────────────────────────────────── */
+.btn-action{padding:.3rem .6rem;border-radius:6px;border:none;font-size:.8rem;cursor:pointer;transition:all .2s}
+.btn-action.edit{background:#e7f1ff;color:#0d6efd}
+.btn-action.edit:hover{background:#0d6efd;color:#fff}
+.btn-action.delete{background:#f8d7da;color:#dc3545}
+.btn-action.delete:hover{background:#dc3545;color:#fff}
+.btn-action.view{background:#d1e7dd;color:#198754}
+.btn-action.view:hover{background:#198754;color:#fff}
+.empty-state{text-align:center;padding:3rem 1rem;color:#6c757d}
+.empty-state i{font-size:3rem;margin-bottom:1rem;display:block}
+.btn-login-nav,.btn-signup-nav{padding:.4rem 1rem;border-radius:8px;font-size:.85rem;font-weight:500;text-decoration:none}
+.btn-login-nav{color:#0d6efd!important;border:1px solid #0d6efd}
+.btn-signup-nav{background:#0d6efd;color:#fff!important;border-radius:8px}
+.btn-signup-nav:hover{background:#0a58ca}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────── */
+.sidebar-toggle{background:none;border:none;font-size:1.3rem;color:#333;cursor:pointer;padding:.25rem .5rem;border-radius:6px;transition:background .2s}
+.sidebar-toggle:hover{background:rgba(0,0,0,.05)}
+@media(max-width:991px){
+  .dash-sidebar{transform:translateX(-100%)}
+  .dash-sidebar.show{transform:translateX(0)}
+  .dash-main{margin-left:0}
+}
+@media(min-width:992px){
+  .dash-sidebar{transition:width .3s,width .3s}
+  .dash-wrapper.sidebar-collapsed .dash-sidebar{width:0;overflow:hidden;padding:0}
+  .dash-wrapper.sidebar-collapsed .dash-sidebar .sidebar-brand,
+  .dash-wrapper.sidebar-collapsed .dash-sidebar .sidebar-nav,
+  .dash-wrapper.sidebar-collapsed .dash-sidebar > div:last-child{opacity:0;transition:opacity .2s}
+  .dash-wrapper.sidebar-collapsed .dash-main{margin-left:0}
+}
