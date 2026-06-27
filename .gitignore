@@ -4,6 +4,10 @@ Backend/Salama/obj/
 Backend/Salama/.vs/
 Backend/Salama/*.log
 Backend/Salama/*.db
+Backend/Salama/*.rar
+Backend/Salama/*.lscache
+Backend/Salama/git_push_trace.txt
+Backend/Salama/Salama.http
 
 # Frontend
 Frontend/node_modules/
@@ -18,3 +22,8 @@ Desktop.ini
 .idea/
 *.suo
 *.user
+
+# Root
+bin/
+obj/
+.vs/
