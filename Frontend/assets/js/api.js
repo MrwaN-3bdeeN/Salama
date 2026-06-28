@@ -1,23 +1,21 @@
-const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-  ? 'http://localhost:5181/api'
-  : 'https://salama-api.azurewebsites.net/api';
+const API_BASE = 'http://localhost:5181/api';
 
 const Api = {
-  getToken() { return localStorage.getItem('salama_token'); },
-  getUser() { const u = localStorage.getItem('salama_user'); return u ? JSON.parse(u) : null; },
+  getToken() { return localStorage.getItem('clinic_token'); },
+  getUser() { const u = localStorage.getItem('clinic_user'); return u ? JSON.parse(u) : null; },
   isLoggedIn() { return !!this.getToken(); },
   getRole() { const u = this.getUser(); return u ? u.role : null; },
 
   saveAuth(token, user, refreshToken) {
-    localStorage.setItem('salama_token', token);
-    localStorage.setItem('salama_user', JSON.stringify(user));
-    if (refreshToken) localStorage.setItem('salama_refresh_token', refreshToken);
+    localStorage.setItem('clinic_token', token);
+    localStorage.setItem('clinic_user', JSON.stringify(user));
+    if (refreshToken) localStorage.setItem('clinic_refresh_token', refreshToken);
   },
 
   clearAuth() {
-    localStorage.removeItem('salama_token');
-    localStorage.removeItem('salama_user');
-    localStorage.removeItem('salama_refresh_token');
+    localStorage.removeItem('clinic_token');
+    localStorage.removeItem('clinic_user');
+    localStorage.removeItem('clinic_refresh_token');
   },
 
   logout() { this.clearAuth(); window.location.href = 'login.html'; },
