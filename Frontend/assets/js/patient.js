@@ -7,6 +7,17 @@ async function initPatient() {
     document.getElementById('userName').textContent = user.name || user.email || 'Patient';
   }
 
+  try {
+    const profile = await Api.patientProfile();
+    if (profile.profilePicturePath) {
+      const badge = document.querySelector('.user-badge');
+      if (badge) {
+        const picUrl = Api.getProfilePictureUrl(profile.profilePicturePath);
+        badge.innerHTML = `<img src="${picUrl}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover"> <span id="userName">${escapeHtml(user?.name || user?.email || 'Patient')}</span>`;
+      }
+    }
+  } catch (e) { /* ignore */ }
+
   document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -436,12 +447,28 @@ async function loadHistory() {
 async function loadProfile() {
   try {
     const p = await Api.patientProfile();
+    const picUrl = Api.getProfilePictureUrl(p.profilePicturePath);
 
     document.getElementById('contentArea').innerHTML = `
       <div class="dash-card">
         <div class="card-header-custom"><h5><i class="bi bi-person-circle me-2"></i>My Profile</h5></div>
         <div class="card-body-custom">
           <div id="profileMsg"></div>
+          <div class="d-flex align-items-center gap-4 mb-4">
+            <div id="profilePicWrapper" style="position:relative;width:100px;height:100px;flex-shrink:0">
+              ${picUrl
+                ? `<img id="profilePic" src="${picUrl}" alt="Profile" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6">`
+                : `<div id="profilePic" style="width:100px;height:100px;border-radius:50%;background:#e9ecef;display:flex;align-items:center;justify-content:center;border:3px solid #dee2e6"><i class="bi bi-person" style="font-size:2.5rem;color:#adb5bd"></i></div>`
+              }
+              <label for="profilePicInput" style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:.9rem"><i class="bi bi-camera"></i></label>
+              <input type="file" id="profilePicInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+            </div>
+            <div>
+              <h5 class="mb-1">${escapeHtml(p.name || '')}</h5>
+              <p class="text-muted mb-0">${escapeHtml(p.email || '')}</p>
+              <small class="text-muted">Click the camera icon to upload a profile picture</small>
+            </div>
+          </div>
           <form id="profileForm">
             <div class="row g-3">
               <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" id="profileName" value="${escapeAttr(p.name || '')}" required></div>
@@ -453,6 +480,26 @@ async function loadProfile() {
           </form>
         </div>
       </div>`;
+
+    document.getElementById('profilePicInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const msgEl = document.getElementById('profileMsg');
+      if (file.size > 5 * 1024 * 1024) { msgEl.innerHTML = '<div class="alert alert-danger">File must be under 5MB.</div>'; return; }
+      try {
+        msgEl.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+        const result = await Api.uploadProfilePicture(file);
+        const wrapper = document.getElementById('profilePicWrapper');
+        const newImg = document.createElement('img');
+        newImg.id = 'profilePic';
+        newImg.src = Api.getProfilePictureUrl(result.fileName);
+        newImg.alt = 'Profile';
+        newImg.style.cssText = 'width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6';
+        const old = document.getElementById('profilePic');
+        wrapper.replaceChild(newImg, old);
+        msgEl.innerHTML = '<div class="alert alert-success">Profile picture updated!</div>';
+      } catch (err) { msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`; }
+    });
 
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();

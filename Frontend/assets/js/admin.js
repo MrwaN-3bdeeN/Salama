@@ -7,6 +7,17 @@ async function initAdmin() {
   const nameEl = document.getElementById('userName');
   if (nameEl && user) nameEl.textContent = user.name || user.email;
 
+  try {
+    const profile = await Api.getMe();
+    if (profile.profilePicturePath) {
+      const badge = document.querySelector('.user-badge');
+      if (badge) {
+        const picUrl = Api.getProfilePictureUrl(profile.profilePicturePath);
+        badge.innerHTML = `<img src="${picUrl}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover"> <span id="userName">${escapeHtml(user?.name || user?.email || 'Admin')}</span>`;
+      }
+    }
+  } catch (e) { /* ignore */ }
+
   document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -30,7 +41,7 @@ function showSection(name) {
 
   const titles = {
     dashboard: 'Dashboard', doctors: 'Manage Doctors', patients: 'Manage Patients',
-    appointments: 'Appointments', clinics: 'Clinics', specializations: 'Specializations', certificates: 'Certificates'
+    appointments: 'Appointments', clinics: 'Clinics', specializations: 'Specializations', certificates: 'Certificates', profile: 'My Profile'
   };
   document.getElementById('pageTitle').textContent = titles[name] || name;
 
@@ -42,6 +53,7 @@ function showSection(name) {
     case 'clinics': loadClinics(); break;
     case 'specializations': loadSpecializations(); break;
     case 'certificates': loadCertificates(); break;
+    case 'profile': loadProfile(); break;
   }
 }
 
@@ -483,4 +495,81 @@ function statusBadge(status) {
   if (!status) return '<span class="badge bg-secondary">—</span>';
   const map = { Scheduled: 'bg-primary', Upcoming: 'bg-info', Completed: 'bg-success', Cancelled: 'bg-danger' };
   return `<span class="badge ${map[status] || 'bg-secondary'}">${status}</span>`;
+}
+
+// ─── PROFILE ───────────────────────────────────────────────
+async function loadProfile() {
+  const area = document.getElementById('dashContent');
+  try {
+    const data = await Api.getMe();
+    const picUrl = Api.getProfilePictureUrl(data.profilePicturePath);
+
+    area.innerHTML = `
+      <div class="dash-card">
+        <div class="card-header-custom"><h5><i class="bi bi-person-circle me-2"></i>My Profile</h5></div>
+        <div class="card-body-custom">
+          <div id="profileMsg"></div>
+          <div class="d-flex align-items-center gap-4 mb-4">
+            <div id="profilePicWrapper" style="position:relative;width:100px;height:100px;flex-shrink:0">
+              ${picUrl
+                ? `<img id="profilePic" src="${picUrl}" alt="Profile" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6">`
+                : `<div id="profilePic" style="width:100px;height:100px;border-radius:50%;background:#e9ecef;display:flex;align-items:center;justify-content:center;border:3px solid #dee2e6"><i class="bi bi-person" style="font-size:2.5rem;color:#adb5bd"></i></div>`
+              }
+              <label for="profilePicInput" style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:.9rem"><i class="bi bi-camera"></i></label>
+              <input type="file" id="profilePicInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+            </div>
+            <div>
+              <h5 class="mb-1">${escapeHtml(data.name || '')}</h5>
+              <p class="text-muted mb-0">${escapeHtml(data.email || '')}</p>
+              <small class="text-muted">Click the camera icon to upload a profile picture</small>
+            </div>
+          </div>
+          <form id="profileForm">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Full Name</label><input type="text" class="form-control" id="profileName" value="${escapeAttr(data.name || '')}" required></div>
+              <div class="col-md-6"><label class="form-label">Email</label><input type="email" class="form-control" value="${escapeAttr(data.email || '')}" disabled></div>
+              <div class="col-md-6"><label class="form-label">Phone</label><input type="text" class="form-control" id="profilePhone" value="${escapeAttr(String(data.phone || ''))}"></div>
+            </div>
+            <div class="mt-4"><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save Changes</button></div>
+          </form>
+        </div>
+      </div>`;
+
+    document.getElementById('profilePicInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const msgEl = document.getElementById('profileMsg');
+      if (file.size > 5 * 1024 * 1024) { msgEl.innerHTML = '<div class="alert alert-danger">File must be under 5MB.</div>'; return; }
+      try {
+        msgEl.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+        const result = await Api.uploadProfilePicture(file);
+        const wrapper = document.getElementById('profilePicWrapper');
+        const newImg = document.createElement('img');
+        newImg.id = 'profilePic';
+        newImg.src = Api.getProfilePictureUrl(result.fileName);
+        newImg.alt = 'Profile';
+        newImg.style.cssText = 'width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6';
+        const old = document.getElementById('profilePic');
+        wrapper.replaceChild(newImg, old);
+        msgEl.innerHTML = '<div class="alert alert-success">Profile picture updated!</div>';
+      } catch (err) { msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`; }
+    });
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('profileMsg');
+      try {
+        const body = {
+          name: document.getElementById('profileName').value.trim(),
+          phone: parseInt(document.getElementById('profilePhone').value) || undefined
+        };
+        await Api.put('/auth/me', body);
+        msgEl.innerHTML = '<div class="alert alert-success">Profile updated successfully.</div>';
+        const user = Api.getUser();
+        if (user) { user.name = body.name; localStorage.setItem('clinic_user', JSON.stringify(user)); document.getElementById('userName').textContent = body.name; }
+      } catch (err) { msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`; }
+    });
+  } catch (err) {
+    area.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>${escapeHtml(err.message)}</div>`;
+  }
 }

@@ -1,10 +1,16 @@
 const API_BASE = 'http://localhost:5181/api';
+const API_URL = 'http://localhost:5181';
 
 const Api = {
   getToken() { return localStorage.getItem('clinic_token'); },
   getUser() { const u = localStorage.getItem('clinic_user'); return u ? JSON.parse(u) : null; },
   isLoggedIn() { return !!this.getToken(); },
   getRole() { const u = this.getUser(); return u ? u.role : null; },
+
+  getProfilePictureUrl(path) {
+    if (!path) return null;
+    return `${API_URL}/uploads/${path}`;
+  },
 
   saveAuth(token, user, refreshToken) {
     localStorage.setItem('clinic_token', token);
@@ -50,6 +56,20 @@ const Api = {
   register(data) { return this.post('/auth/register', data); },
   getMe() { return this.get('/auth/me'); },
   changePassword(oldPassword, newPassword) { return this.put('/auth/change-password', { oldPassword, newPassword }); },
+
+  async uploadProfilePicture(file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = this.getToken();
+    const res = await fetch(`${API_BASE}/auth/upload-profile-picture`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || 'Upload failed');
+    return data;
+  },
 
   getDoctors() { return this.get('/doctors'); },
   getDoctorsFiltered(filters) { const q = filters ? '?' + new URLSearchParams(filters).toString() : ''; return this.get(`/doctors${q}`); },

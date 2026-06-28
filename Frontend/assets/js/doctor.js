@@ -5,6 +5,17 @@ async function initDoctor() {
   const user = Api.getUser();
   if (user) document.getElementById('userName').textContent = user.name || user.email;
 
+  try {
+    const profile = await Api.doctorProfile();
+    if (profile.profilePicturePath) {
+      const badge = document.querySelector('.user-badge');
+      if (badge) {
+        const picUrl = Api.getProfilePictureUrl(profile.profilePicturePath);
+        badge.innerHTML = `<img src="${picUrl}" alt="" style="width:28px;height:28px;border-radius:50%;object-fit:cover"> <span id="userName">${escapeHtml(user?.name || user?.email || 'Doctor')}</span>`;
+      }
+    }
+  } catch (e) { /* ignore */ }
+
   document.querySelectorAll('.sidebar-nav a').forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -356,6 +367,7 @@ async function loadProfile() {
   const area = document.getElementById('contentArea');
   try {
     const data = await Api.doctorProfile();
+    const picUrl = Api.getProfilePictureUrl(data.profilePicturePath);
 
     area.innerHTML = `
       <div class="dash-card">
@@ -364,6 +376,21 @@ async function loadProfile() {
         </div>
         <div class="card-body-custom">
           <div id="profileMsg" class="d-none"></div>
+          <div class="d-flex align-items-center gap-4 mb-4">
+            <div id="profilePicWrapper" style="position:relative;width:100px;height:100px;flex-shrink:0">
+              ${picUrl
+                ? `<img id="profilePic" src="${picUrl}" alt="Profile" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6">`
+                : `<div id="profilePic" style="width:100px;height:100px;border-radius:50%;background:#e9ecef;display:flex;align-items:center;justify-content:center;border:3px solid #dee2e6"><i class="bi bi-person" style="font-size:2.5rem;color:#adb5bd"></i></div>`
+              }
+              <label for="profilePicInput" style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:#0d6efd;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:.9rem"><i class="bi bi-camera"></i></label>
+              <input type="file" id="profilePicInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+            </div>
+            <div>
+              <h5 class="mb-1">Dr. ${escapeHtml(data.name || '')}</h5>
+              <p class="text-muted mb-0">${escapeHtml(data.email || '')}</p>
+              <small class="text-muted">Click the camera icon to upload a profile picture</small>
+            </div>
+          </div>
           <form id="profileForm">
             <div class="row g-3">
               <div class="col-md-6">
@@ -404,6 +431,26 @@ async function loadProfile() {
         </div>
       </div>
     `;
+
+    document.getElementById('profilePicInput').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const msg = document.getElementById('profileMsg');
+      if (file.size > 5 * 1024 * 1024) { msg.className = 'alert alert-danger'; msg.textContent = 'File must be under 5MB.'; msg.classList.remove('d-none'); return; }
+      try {
+        msg.className = 'alert alert-info'; msg.textContent = 'Uploading...'; msg.classList.remove('d-none');
+        const result = await Api.uploadProfilePicture(file);
+        const wrapper = document.getElementById('profilePicWrapper');
+        const newImg = document.createElement('img');
+        newImg.id = 'profilePic';
+        newImg.src = Api.getProfilePictureUrl(result.fileName);
+        newImg.alt = 'Profile';
+        newImg.style.cssText = 'width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6';
+        const old = document.getElementById('profilePic');
+        wrapper.replaceChild(newImg, old);
+        msg.className = 'alert alert-success'; msg.textContent = 'Profile picture updated!'; msg.classList.remove('d-none');
+      } catch (err) { msg.className = 'alert alert-danger'; msg.textContent = err.message || 'Upload failed'; msg.classList.remove('d-none'); }
+    });
 
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
       e.preventDefault();
