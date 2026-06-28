@@ -124,6 +124,40 @@ namespace Salama.Controllers
             return Ok(new { message = "Appointment cancelled successfully." });
         }
 
+        // ─── 47b. UPDATE OWN APPOINTMENT DATE ───────────────────────
+        [HttpPut("appointments/{id}/date")]
+        public async Task<IActionResult> UpdateAppointmentDate(int id, [FromBody] UpdatePatientAppointmentDateRequest request)
+        {
+            var userId = GetUserId();
+            var appointment = await _context.Appointments.FindAsync(id);
+
+            if (appointment == null)
+                return NotFound(new { message = "Appointment not found." });
+
+            if (appointment.PatientId != userId)
+                return Forbid();
+
+            if (appointment.AppointmentStatus == "Completed")
+                return BadRequest(new { message = "Cannot update a completed appointment." });
+
+            if (appointment.AppointmentStatus == "Cancelled")
+                return BadRequest(new { message = "Cannot update a cancelled appointment." });
+
+            DateTime appointmentDateTime = appointment.AppintmentDate.ToDateTime(TimeOnly.MinValue);
+            var remainingTime = appointmentDateTime - DateTime.Now;
+
+            if (remainingTime.TotalHours < 72)
+                return BadRequest(new { message = "Cannot update appointments within 72 hours of the scheduled time." });
+
+            if (appointment.AppintmentDate < DateOnly.FromDateTime(DateTime.Now))
+                return BadRequest(new { message = "Cannot update past appointments." });
+
+            appointment.AppintmentDate = request.NewDate;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment updated successfully." });
+        }
+
         // ─── 48. LIST OWN DIAGNOSES ────────────────────────────────
         [HttpGet("diagnoses")]
         public async Task<IActionResult> GetMyDiagnoses()
@@ -175,5 +209,10 @@ namespace Salama.Controllers
 
             return Ok(history);
         }
+    }
+
+    public class UpdatePatientAppointmentDateRequest
+    {
+        public DateOnly NewDate { get; set; }
     }
 }

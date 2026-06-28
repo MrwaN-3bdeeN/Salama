@@ -205,6 +205,76 @@ namespace Salama.Controllers
             return Ok(new { message = "Appointment cancelled." });
         }
 
+        // ─── UPDATE APPOINTMENT DATE (Doctor - no time restriction) ──
+        [HttpPut("appointments/{id}/date")]
+        public async Task<IActionResult> UpdateAppointmentDate(int id, [FromBody] UpdateDoctorAppointmentDateRequest request)
+        {
+            var userId = GetUserId();
+            var appointment = await _context.Appointments.FindAsync(id);
+
+            if (appointment == null)
+                return NotFound(new { message = "Appointment not found." });
+
+            if (appointment.DoctorId != userId)
+                return Forbid();
+
+            if (appointment.AppointmentStatus == "Completed" || appointment.AppointmentStatus == "Cancelled")
+                return BadRequest(new { message = "Cannot update completed or cancelled appointments." });
+
+            appointment.AppintmentDate = request.NewDate;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Appointment date updated successfully." });
+        }
+
+        // ─── ADD DIAGNOSIS WITH MEDICINE TO APPOINTMENT ────────────
+        [HttpPost("appointments/{id}/diagnosis")]
+        public async Task<IActionResult> AddDiagnosisToAppointment(int id, [FromBody] AddDiagnosisToAppointmentRequest request)
+        {
+            var userId = GetUserId();
+            var appointment = await _context.Appointments.FindAsync(id);
+
+            if (appointment == null)
+                return NotFound(new { message = "Appointment not found." });
+
+            if (appointment.DoctorId != userId)
+                return Forbid();
+
+            if (appointment.AppointmentStatus == "Cancelled")
+                return BadRequest(new { message = "Cannot add diagnosis to a cancelled appointment." });
+
+            var exists = await _context.Diagnoses.AnyAsync(d => d.AppointmentId == id);
+            if (exists)
+                return BadRequest(new { message = "A diagnosis already exists for this appointment. Use update instead." });
+
+            var maxId = _context.Diagnoses.Any() ? _context.Diagnoses.Max(d => d.Id) : 0;
+
+            var fullDiagnosis = request.Diagnosis ?? "";
+            if (!string.IsNullOrEmpty(request.Medicine))
+                fullDiagnosis += (string.IsNullOrEmpty(fullDiagnosis) ? "" : "\n") + "Medicine: " + request.Medicine;
+
+            var diagnosis = new Diagnosis
+            {
+                Id = maxId + 1,
+                AppointmentId = id,
+                PatientId = appointment.PatientId,
+                DoctorId = userId,
+                Diagnosis1 = fullDiagnosis,
+                DiagnosisDate = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            _context.Diagnoses.Add(diagnosis);
+
+            if (appointment.AppointmentStatus == "Scheduled")
+            {
+                appointment.AppointmentStatus = "Completed";
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Diagnosis added successfully.", diagnosisId = diagnosis.Id });
+        }
+
         // ─── 38. LIST OWN PATIENTS ─────────────────────────────────
         [HttpGet("patients")]
         public async Task<IActionResult> GetMyPatients()
@@ -348,5 +418,16 @@ namespace Salama.Controllers
 
             return Ok(clinics);
         }
+    }
+
+    public class UpdateDoctorAppointmentDateRequest
+    {
+        public DateOnly NewDate { get; set; }
+    }
+
+    public class AddDiagnosisToAppointmentRequest
+    {
+        public string? Diagnosis { get; set; }
+        public string? Medicine { get; set; }
     }
 }

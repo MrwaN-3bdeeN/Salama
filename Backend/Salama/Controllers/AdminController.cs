@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Salama.Models;
 using Salama.Models.DTOs;
 using BCrypt.Net;
+using System.Security.Claims;
 
 namespace Salama.Controllers
 {
@@ -29,6 +30,8 @@ namespace Salama.Controllers
         private const string MsgCertificateNotFound = "Certificate not found.";
         private const string MsgAssignmentNotFound = "Assignment not found.";
 
+        private int GetUserId() => int.Parse(User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+
         // ─── 7. DASHBOARD STATS ────────────────────────────────────
         [HttpGet("dashboard")]
         public async Task<IActionResult> GetDashboard()
@@ -52,6 +55,45 @@ namespace Salama.Controllers
                 totalClinics,
                 totalSpecializations
             });
+        }
+
+        // ─── ADMIN PROFILE ──────────────────────────────────────
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = GetUserId();
+
+            var profile = await _context.Users
+                .Where(u => u.Id == userId)
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Name,
+                    u.Email,
+                    u.Phone,
+                    u.Address,
+                    u.ProfilePicturePath
+                })
+                .FirstOrDefaultAsync();
+
+            if (profile == null) return NotFound(new { message = "Admin not found." });
+            return Ok(profile);
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateAdminProfileRequest request)
+        {
+            var userId = GetUserId();
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null) return NotFound(new { message = "Admin not found." });
+
+            if (request.Name != null) user.Name = request.Name;
+            if (request.Phone.HasValue) user.Phone = request.Phone.Value;
+            if (request.Address != null) user.Address = request.Address;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Profile updated successfully." });
         }
 
         // ─── DOCTORS CRUD ──────────────────────────────────────────
@@ -528,5 +570,12 @@ namespace Salama.Controllers
 
             return Ok(new { message = "Certificate removed from doctor successfully." });
         }
+    }
+
+    public class UpdateAdminProfileRequest
+    {
+        public string? Name { get; set; }
+        public int? Phone { get; set; }
+        public string? Address { get; set; }
     }
 }

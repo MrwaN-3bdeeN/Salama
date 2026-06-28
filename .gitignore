@@ -8,6 +8,7 @@ Backend/Salama/*.rar
 Backend/Salama/*.lscache
 Backend/Salama/git_push_trace.txt
 Backend/Salama/Salama.http
+Backend/Salama/Uploads/
 
 # Frontend
 Frontend/node_modules/

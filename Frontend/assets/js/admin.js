@@ -563,7 +563,7 @@ async function loadProfile() {
           name: document.getElementById('profileName').value.trim(),
           phone: parseInt(document.getElementById('profilePhone').value) || undefined
         };
-        await Api.put('/auth/me', body);
+        await Api.put('/admin/profile', body);
         msgEl.innerHTML = '<div class="alert alert-success">Profile updated successfully.</div>';
         const user = Api.getUser();
         if (user) { user.name = body.name; localStorage.setItem('clinic_user', JSON.stringify(user)); document.getElementById('userName').textContent = body.name; }

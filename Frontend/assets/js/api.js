@@ -103,6 +103,11 @@ const Api = {
   adminRemoveDoctorClinic(doctorId, clinicId) { return this.delete(`/admin/doctors/${doctorId}/clinics/${clinicId}`); },
   adminAssignDoctorCert(doctorId, certId) { return this.post(`/admin/doctors/${doctorId}/certificates`, { certificateId: certId }); },
   adminRemoveDoctorCert(doctorId, certId) { return this.delete(`/admin/doctors/${doctorId}/certificates/${certId}`); },
+  adminProfile() { return this.get('/admin/profile'); },
+  adminUpdateProfile(data) { return this.put('/admin/profile', data); },
+  doctorUpdateAppointmentDate(id, data) { return this.put(`/doctor/appointments/${id}/date`, data); },
+  patientUpdateAppointmentDate(id, data) { return this.put(`/patient/appointments/${id}/date`, data); },
+  doctorAddDiagnosisToAppointment(id, data) { return this.post(`/doctor/appointments/${id}/diagnosis`, data); },
 
   doctorProfile() { return this.get('/doctor/profile'); },
   doctorUpdateProfile(data) { return this.put('/doctor/profile', data); },
