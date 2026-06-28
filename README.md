@@ -35,7 +35,7 @@ A full-stack clinic management system with an ASP.NET Core 10 Web API backend an
 │       │   ├── SpecializationsController.cs
 │       │   └── PatientsController.cs
 │       ├── Models/               # EF Core entities + DTOs
-│       ├── Dat/                  # AppDbContext
+│       ├── Data/                   # AppDbContext
 │       ├── Helpers/              # JWT config
 │       └── Program.cs
 ├── Frontend/
