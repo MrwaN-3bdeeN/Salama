@@ -38,6 +38,7 @@ function showSection(name) {
   const titles = {
     dashboard: 'Dashboard',
     book: 'Book Appointment',
+    'confirm-appointment': 'Confirm Appointment',
     appointments: 'My Appointments',
     diagnoses: 'My Diagnoses',
     history: 'Medical History',
@@ -51,6 +52,7 @@ function showSection(name) {
   switch (name) {
     case 'dashboard': loadDashboard(); break;
     case 'book': loadBook(); break;
+    case 'confirm-appointment': loadBookingPage(); break;
     case 'appointments': loadAppointments(); break;
     case 'diagnoses': loadDiagnoses(); break;
     case 'history': loadHistory(); break;
@@ -218,7 +220,7 @@ function renderBookDoctors(doctors) {
             <button class="btn btn-outline-primary btn-sm flex-grow-1" onclick="viewDoctorProfile(${d.id})">
               <i class="bi bi-eye me-1"></i>View
             </button>
-            <button class="btn btn-primary btn-sm flex-grow-1" onclick="openBookingModal(${d.id}, '${escapeAttr(d.userName)}', '${escapeAttr(d.specializationName || '')}')">
+            <button class="btn btn-primary btn-sm flex-grow-1" onclick="showBookingPage(${d.id})">
               <i class="bi bi-calendar-plus me-1"></i>Book
             </button>
           </div>
@@ -266,7 +268,7 @@ async function viewDoctorProfile(doctorId) {
           ${certificates.length > 0 ? `<div class="mb-4"><h6 class="fw-bold mb-2"><i class="bi bi-award me-1"></i>Certificates</h6>
             <div class="d-flex flex-wrap gap-2">${certificates.map(c => `<span class="badge bg-primary bg-opacity-10 text-primary p-2">${escapeHtml(c.certificateName || '')}</span>`).join('')}</div></div>` : ''}
           <div class="mt-4">
-            <button class="btn btn-primary" onclick="openBookingModal(${doctorId}, '${escapeAttr(data.name || data.userName || '')}', '${escapeAttr(data.specializationName || '')}')">
+            <button class="btn btn-primary" onclick="showBookingPage(${doctorId})">
               <i class="bi bi-calendar-plus me-1"></i>Book Appointment with Dr. ${escapeHtml(data.name || data.userName || '')}
             </button>
           </div>
@@ -277,89 +279,94 @@ async function viewDoctorProfile(doctorId) {
   }
 }
 
-function openBookingModal(doctorId, doctorName, specName) {
-  const existing = document.getElementById('bookingModal');
-  if (existing) existing.remove();
+// ─── BOOKING PAGE ─────────────────────────────────────────
+let bookingDoctorData = null;
 
-  const user = Api.getUser();
-  const minDate = new Date().toISOString().split('T')[0];
+function showBookingPage(doctorId) {
+  window._bookingDoctorId = doctorId;
+  showSection('confirm-appointment');
+}
 
-  const modal = document.createElement('div');
-  modal.id = 'bookingModal';
-  modal.className = 'modal fade show d-block';
-  modal.tabIndex = -1;
-  modal.innerHTML = `
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title"><i class="bi bi-calendar-plus me-2"></i>Book Appointment</h5>
-          <button type="button" class="btn-close" onclick="closeBookingModal()"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3 p-3 rounded" style="background:#f8f9fa">
-            <strong>Dr. ${escapeHtml(doctorName)}</strong><br>
-            <small class="text-muted">${escapeHtml(specName)}</small>
+async function loadBookingPage() {
+  const area = document.getElementById('contentArea');
+  const doctorId = window._bookingDoctorId;
+  if (!doctorId) { showSection('book'); return; }
+
+  try {
+    const doctor = await Api.getDoctor(doctorId);
+    bookingDoctorData = doctor;
+    const picUrl = Api.getProfilePictureUrl(doctor.profilePicturePath);
+    const images = ['staff-1.webp','staff-2.webp','staff-3.webp','staff-4.webp','staff-5.webp','staff-6.webp','staff-7.webp','staff-8.webp'];
+    const imgIdx = doctorId % images.length;
+    const minDate = new Date().toISOString().split('T')[0];
+
+    let clinics = [];
+    try { clinics = await Api.getDoctorClinics(doctorId); } catch (e) { /* ignore */ }
+    clinics = Array.isArray(clinics) ? clinics : [];
+
+    area.innerHTML = `
+      <div class="dash-card mb-4">
+        <div class="card-body-custom">
+          <button class="btn btn-sm btn-outline-secondary mb-3" onclick="showSection('book')"><i class="bi bi-arrow-left me-1"></i>Back to Doctors</button>
+          <div class="d-flex align-items-center gap-4 mb-4">
+            ${picUrl
+              ? `<img src="${picUrl}" alt="Dr." style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6">`
+              : `<img src="assets/img/health/${images[imgIdx]}" alt="Dr." style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #dee2e6">`
+            }
+            <div>
+              <h4 class="mb-1">Dr. ${escapeHtml(doctor.name || doctor.userName || '')}</h4>
+              <p class="text-primary mb-0 fw-semibold">${escapeHtml(doctor.specializationName || 'General')}</p>
+            </div>
           </div>
-          <div id="bookModalMsg"></div>
-          <form id="bookingForm">
-            <input type="hidden" name="doctorId" value="${doctorId}">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Select Clinic</label>
-              <select class="form-select" id="bookClinicSelect" name="clinicId">
-                <option value="">Select Clinic (optional)</option>
-              </select>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="card-header-custom"><h5><i class="bi bi-calendar-plus me-2"></i>Confirm Appointment</h5></div>
+        <div class="card-body-custom">
+          <div id="bookingPageMsg"></div>
+          <form id="bookingPageForm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Select Clinic</label>
+                <select class="form-select" id="bookPageClinicSelect" name="clinicId">
+                  <option value="">Select Clinic (optional)</option>
+                  ${clinics.map(c => `<option value="${c.id}">${escapeHtml(c.clinicName || '')}${c.address ? ' - ' + escapeHtml(c.address) : ''}</option>`).join('')}
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Appointment Date</label>
+                <input type="date" class="form-control" name="date" min="${minDate}" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label fw-semibold">Notes / Reason for Visit (optional)</label>
+                <textarea class="form-control" name="diagnosis" rows="3" placeholder="Describe your symptoms or reason for visit"></textarea>
+              </div>
             </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Appointment Date</label>
-              <input type="date" class="form-control" name="date" min="${minDate}" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Notes / Reason for Visit (optional)</label>
-              <textarea class="form-control" name="diagnosis" rows="3" placeholder="Describe your symptoms or reason for visit"></textarea>
+            <div class="mt-4 d-flex gap-2">
+              <button type="button" class="btn btn-primary" onclick="submitBookingPage()">
+                <i class="bi bi-check-lg me-1"></i>Confirm Booking
+              </button>
+              <button type="button" class="btn btn-outline-secondary" onclick="showSection('book')">
+                <i class="bi bi-x-lg me-1"></i>Cancel
+              </button>
             </div>
           </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="closeBookingModal()">Cancel</button>
-          <button type="button" class="btn btn-primary" id="bookConfirmBtn" onclick="submitBooking(${doctorId}, ${user ? user.id : 0})">
-            <i class="bi bi-check-lg me-1"></i>Confirm Booking
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop fade show" onclick="if(event.target===this)closeBookingModal()"></div>`;
-
-  document.body.appendChild(modal);
-  document.body.classList.add('modal-open');
-
-  loadDoctorClinics(doctorId);
-}
-
-async function loadDoctorClinics(doctorId) {
-  try {
-    const clinics = await Api.getDoctorClinics(doctorId);
-    const list = Array.isArray(clinics) ? clinics : [];
-    const select = document.getElementById('bookClinicSelect');
-    if (!select) return;
-    list.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.clinicName + (c.address ? ` - ${c.address}` : '');
-      select.appendChild(opt);
-    });
-  } catch (e) {
-    console.log('Could not load doctor clinics:', e);
+      </div>`;
+  } catch (err) {
+    area.innerHTML = `<div class="alert alert-danger"><i class="bi bi-exclamation-triangle me-2"></i>${escapeHtml(err.message)}</div>`;
   }
 }
 
-async function submitBooking(doctorId, patientId) {
-  const form = document.getElementById('bookingForm');
-  const msgEl = document.getElementById('bookModalMsg');
-  const btn = document.getElementById('bookConfirmBtn');
+async function submitBookingPage() {
+  const form = document.getElementById('bookingPageForm');
+  const msgEl = document.getElementById('bookingPageMsg');
+  const btn = form.querySelector('.btn-primary');
+  const user = Api.getUser();
 
   const date = form.date.value;
   if (!date) {
-    msgEl.innerHTML = '<div class="alert alert-danger py-2">Please select a date.</div>';
+    msgEl.innerHTML = '<div class="alert alert-danger">Please select a date.</div>';
     return;
   }
 
@@ -368,35 +375,26 @@ async function submitBooking(doctorId, patientId) {
 
   try {
     await Api.bookAppointment({
-      doctorId: doctorId,
-      patientId: patientId,
+      doctorId: window._bookingDoctorId,
+      patientId: user ? user.id : 0,
       clinicId: form.clinicId.value ? parseInt(form.clinicId.value) : null,
       diagnosis: form.diagnosis.value || '',
       appointmentDate: date
     });
 
-    msgEl.innerHTML = '<div class="alert alert-success py-2"><i class="bi bi-check-circle me-1"></i>Appointment booked successfully!</div>';
+    msgEl.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle me-1"></i>Appointment booked successfully!</div>';
     btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Booked!';
     btn.className = 'btn btn-success';
 
     setTimeout(() => {
-      closeBookingModal();
       showToast('Appointment booked successfully!', 'success');
       showSection('appointments');
     }, 1500);
   } catch (err) {
-    msgEl.innerHTML = `<div class="alert alert-danger py-2">${escapeHtml(err.message)}</div>`;
+    msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
     btn.disabled = false;
     btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Confirm Booking';
   }
-}
-
-function closeBookingModal() {
-  const modal = document.getElementById('bookingModal');
-  if (modal) modal.remove();
-  const backdrop = document.querySelector('.modal-backdrop');
-  if (backdrop) backdrop.remove();
-  document.body.classList.remove('modal-open');
 }
 
 // ─── APPOINTMENTS ──────────────────────────────────────────
@@ -535,14 +533,23 @@ async function loadProfile() {
           </form>
           <hr class="my-4">
           <h6 class="mb-3"><i class="bi bi-key me-2"></i>Change Password</h6>
-          <form id="passwordForm">
-            <div class="row g-3">
-              <div class="col-md-4"><label class="form-label">Current Password</label><input type="password" class="form-control" id="oldPassword" required></div>
-              <div class="col-md-4"><label class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" required minlength="6"></div>
-              <div class="col-md-4"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" required minlength="6"></div>
-            </div>
-            <div class="mt-3"><button type="submit" class="btn btn-outline-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
-          </form>
+          <div id="pwdStep1">
+            <p class="text-muted small mb-3">Enter your current password to proceed.</p>
+            <form id="verifyPwdForm" class="d-flex gap-2 align-items-end">
+              <div class="flex-grow-1"><label class="form-label">Current Password</label><input type="password" class="form-control" id="oldPassword" required></div>
+              <div><button type="submit" class="btn btn-outline-primary"><i class="bi bi-check-lg me-1"></i>Verify</button></div>
+            </form>
+          </div>
+          <div id="pwdStep2" style="display:none">
+            <p class="text-success small mb-3"><i class="bi bi-check-circle me-1"></i>Password verified. Enter your new password.</p>
+            <form id="changePwdForm">
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" required minlength="6"></div>
+                <div class="col-md-6"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" required minlength="6"></div>
+              </div>
+              <div class="mt-3"><button type="submit" class="btn btn-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
+            </form>
+          </div>
         </div>
       </div>`;
 
@@ -582,10 +589,23 @@ async function loadProfile() {
       } catch (err) { msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`; }
     });
 
-    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    document.getElementById('verifyPwdForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msgEl = document.getElementById('profileMsg');
       const oldPwd = document.getElementById('oldPassword').value;
+      try {
+        await Api.verifyPassword(oldPwd);
+        document.getElementById('pwdStep1').style.display = 'none';
+        document.getElementById('pwdStep2').style.display = 'block';
+        msgEl.innerHTML = '';
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+      }
+    });
+
+    document.getElementById('changePwdForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('profileMsg');
       const newPwd = document.getElementById('newPassword').value;
       const confirmPwd = document.getElementById('confirmPassword').value;
 
@@ -599,9 +619,12 @@ async function loadProfile() {
       }
 
       try {
-        await Api.changePassword(oldPwd, newPwd);
+        await Api.changePassword(document.getElementById('oldPassword').value, newPwd);
         msgEl.innerHTML = '<div class="alert alert-success">Password changed successfully.</div>';
-        e.target.reset();
+        document.getElementById('pwdStep1').style.display = 'block';
+        document.getElementById('pwdStep2').style.display = 'none';
+        document.getElementById('verifyPwdForm').reset();
+        document.getElementById('changePwdForm').reset();
       } catch (err) {
         msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
       }

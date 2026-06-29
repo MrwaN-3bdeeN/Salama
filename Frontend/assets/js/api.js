@@ -55,6 +55,7 @@ const Api = {
   login(email, password) { return this.post('/auth/login', { email, password }); },
   register(data) { return this.post('/auth/register', data); },
   getMe() { return this.get('/auth/me'); },
+  verifyPassword(oldPassword) { return this.post('/auth/verify-password', { oldPassword }); },
   changePassword(oldPassword, newPassword) { return this.put('/auth/change-password', { oldPassword, newPassword }); },
 
   async uploadProfilePicture(file) {

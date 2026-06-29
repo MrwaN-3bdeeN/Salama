@@ -48,6 +48,12 @@ namespace Salama.Models.DTOs
         public string RefreshToken { get; set; } = null!;
     }
 
+    public class VerifyPasswordRequest
+    {
+        [Required]
+        public string OldPassword { get; set; } = null!;
+    }
+
     public class ChangePasswordRequest
     {
         [Required]

@@ -158,7 +158,27 @@ namespace Salama.Controllers
             return Ok(MapToUserResponse(user));
         }
 
-        // ─── 5. CHANGE PASSWORD ────────────────────────────────────
+        // ─── 5a. VERIFY PASSWORD ───────────────────────────────────
+        [Authorize]
+        [HttpPost("verify-password")]
+        public async Task<IActionResult> VerifyPassword([FromBody] VerifyPasswordRequest request)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+                return Unauthorized(new { message = "Invalid token." });
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            bool isCorrect = BCrypt.Net.BCrypt.Verify(request.OldPassword, user.PasswordHash);
+            if (!isCorrect)
+                return BadRequest(new { message = "Current password is incorrect." });
+
+            return Ok(new { valid = true });
+        }
+
+        // ─── 5b. CHANGE PASSWORD ───────────────────────────────────
         [Authorize]
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)

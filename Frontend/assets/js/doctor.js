@@ -430,14 +430,23 @@ async function loadProfile() {
           </form>
           <hr class="my-4">
           <h6 class="mb-3"><i class="bi bi-key me-2"></i>Change Password</h6>
-          <form id="passwordForm">
-            <div class="row g-3">
-              <div class="col-md-4"><label class="form-label">Current Password</label><input type="password" class="form-control" id="oldPassword" required></div>
-              <div class="col-md-4"><label class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" required minlength="6"></div>
-              <div class="col-md-4"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" required minlength="6"></div>
-            </div>
-            <div class="mt-3"><button type="submit" class="btn btn-outline-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
-          </form>
+          <div id="pwdStep1">
+            <p class="text-muted small mb-3">Enter your current password to proceed.</p>
+            <form id="verifyPwdForm" class="d-flex gap-2 align-items-end">
+              <div class="flex-grow-1"><label class="form-label">Current Password</label><input type="password" class="form-control" id="oldPassword" required></div>
+              <div><button type="submit" class="btn btn-outline-primary"><i class="bi bi-check-lg me-1"></i>Verify</button></div>
+            </form>
+          </div>
+          <div id="pwdStep2" style="display:none">
+            <p class="text-success small mb-3"><i class="bi bi-check-circle me-1"></i>Password verified. Enter your new password.</p>
+            <form id="changePwdForm">
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" required minlength="6"></div>
+                <div class="col-md-6"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" required minlength="6"></div>
+              </div>
+              <div class="mt-3"><button type="submit" class="btn btn-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
+            </form>
+          </div>
         </div>
       </div>
     `;
@@ -498,10 +507,25 @@ async function loadProfile() {
       }
     });
 
-    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    document.getElementById('verifyPwdForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msg = document.getElementById('profileMsg');
       const oldPwd = document.getElementById('oldPassword').value;
+      try {
+        await Api.verifyPassword(oldPwd);
+        document.getElementById('pwdStep1').style.display = 'none';
+        document.getElementById('pwdStep2').style.display = 'block';
+        msg.innerHTML = '';
+        msg.classList.add('d-none');
+      } catch (err) {
+        msg.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+        msg.classList.remove('d-none');
+      }
+    });
+
+    document.getElementById('changePwdForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('profileMsg');
       const newPwd = document.getElementById('newPassword').value;
       const confirmPwd = document.getElementById('confirmPassword').value;
 
@@ -517,10 +541,13 @@ async function loadProfile() {
       }
 
       try {
-        await Api.changePassword(oldPwd, newPwd);
+        await Api.changePassword(document.getElementById('oldPassword').value, newPwd);
         msg.innerHTML = '<div class="alert alert-success">Password changed successfully.</div>';
         msg.classList.remove('d-none');
-        e.target.reset();
+        document.getElementById('pwdStep1').style.display = 'block';
+        document.getElementById('pwdStep2').style.display = 'none';
+        document.getElementById('verifyPwdForm').reset();
+        document.getElementById('changePwdForm').reset();
       } catch (err) {
         msg.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
         msg.classList.remove('d-none');
