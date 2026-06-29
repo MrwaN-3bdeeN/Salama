@@ -8,7 +8,7 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.Configure<GmailSettings>(builder.Configuration.GetSection("Gmail"));
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddSingleton<EmailService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>

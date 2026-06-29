@@ -6,24 +6,24 @@ namespace Salama.Helpers
 {
     public class EmailService
     {
-        private readonly GmailSettings _settings;
+        private readonly SmtpSettings _settings;
 
-        public EmailService(IOptions<GmailSettings> settings)
+        public EmailService(IOptions<SmtpSettings> settings)
         {
             _settings = settings.Value;
         }
 
         public async Task SendVerificationCodeAsync(string toEmail, string code)
         {
-            using var client = new SmtpClient("smtp.gmail.com", 587)
+            using var client = new SmtpClient(_settings.Host, _settings.Port)
             {
                 EnableSsl = true,
-                Credentials = new NetworkCredential(_settings.SenderEmail, _settings.AppPassword)
+                Credentials = new NetworkCredential(_settings.SenderEmail, _settings.SenderPassword)
             };
 
             var mail = new MailMessage
             {
-                From = new MailAddress(_settings.SenderEmail, "Salama"),
+                From = new MailAddress(_settings.SenderEmail, _settings.SenderName),
                 Subject = "Salama - Email Verification Code",
                 Body = $@"
                     <div style='font-family:Arial,sans-serif;max-width:400px;margin:auto;padding:20px'>
