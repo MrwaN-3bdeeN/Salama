@@ -59,7 +59,17 @@ namespace Salama.Controllers
                     query = query.Where(d => doctorIdsInClinic.Contains(d.Id));
                 }
 
-                var doctors = query
+                var doctorIds = query.Select(d => d.Id).ToList();
+
+                var doctorClinicMap = _context.DoctorClinics
+                    .Where(dc => dc.DoctorId.HasValue && doctorIds.Contains(dc.DoctorId.Value) && dc.Clinic != null)
+                    .GroupBy(dc => dc.DoctorId!.Value)
+                    .Select(g => new { DoctorId = g.Key, ClinicName = g.First().Clinic!.ClinicName })
+                    .ToList()
+                    .ToDictionary(x => x.DoctorId, x => x.ClinicName);
+
+                var doctors = _context.Doctors
+                    .Where(d => doctorIds.Contains(d.Id))
                     .Select(d => new
                     {
                         d.Id,
@@ -68,10 +78,19 @@ namespace Salama.Controllers
                         d.SpecializationId,
                         SpecializationName = d.Specialization != null ? d.Specialization.SpecializationName : null,
                         UserName = d.IdNavigation!.Name,
-                        Address = d.IdNavigation.Address,
-                        ClinicName = _context.DoctorClinics.Where(dc => dc.DoctorId == d.Id)
-                            .Select(dc => dc.Clinic != null ? dc.Clinic.ClinicName : null)
-                            .FirstOrDefault()
+                        Address = d.IdNavigation.Address
+                    })
+                    .ToList()
+                    .Select(d => new
+                    {
+                        d.Id,
+                        d.About,
+                        d.Experience,
+                        d.SpecializationId,
+                        d.SpecializationName,
+                        d.UserName,
+                        d.Address,
+                        ClinicName = doctorClinicMap.ContainsKey(d.Id) ? doctorClinicMap[d.Id] : null
                     })
                     .ToList();
 
@@ -100,23 +119,36 @@ namespace Salama.Controllers
                         d.SpecializationId,
                         SpecializationName = d.Specialization != null ? d.Specialization.SpecializationName : null,
                         UserName = d.IdNavigation!.Name,
+                        ProfilePicturePath = d.IdNavigation.ProfilePicturePath,
                         Address = d.IdNavigation.Address,
-                        Clinics = _context.DoctorClinics
-                            .Where(dc => dc.DoctorId == d.Id)
-                            .Select(dc => new
-                            {
-                                Id = dc.Clinic != null ? dc.Clinic.Id : 0,
-                                ClinicName = dc.Clinic != null ? dc.Clinic.ClinicName : null,
-                                Address = dc.Clinic != null ? dc.Clinic.Address : null,
-                                Phone = dc.Clinic != null ? dc.Clinic.Phone : null
-                            }).ToList()
+                        Email = d.IdNavigation.Email
                     })
                     .FirstOrDefault();
 
                 if (doctor == null)
                     return NotFound(new { message = "No doctors found with this id." });
 
-                return Ok(doctor);
+                var clinics = _context.DoctorClinics
+                    .Where(dc => dc.DoctorId == id && dc.Clinic != null)
+                    .Select(dc => new
+                    {
+                        dc.Clinic!.Id,
+                        dc.Clinic.ClinicName,
+                        dc.Clinic.Address,
+                        dc.Clinic.Phone
+                    })
+                    .ToList();
+
+                var certificates = _context.DoctorCertificates
+                    .Where(dc => dc.DoctorId == id && dc.Certificate != null)
+                    .Select(dc => new
+                    {
+                        dc.Certificate!.Id,
+                        dc.Certificate.CertificateName
+                    })
+                    .ToList();
+
+                return Ok(new { doctor.Id, doctor.About, doctor.Experience, doctor.SpecializationId, doctor.SpecializationName, doctor.UserName, doctor.ProfilePicturePath, doctor.Address, doctor.Email, Clinics = clinics, Certificates = certificates });
             }
             catch (Exception ex)
             {

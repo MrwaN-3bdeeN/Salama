@@ -31,7 +31,7 @@
 
   <header id="header" class="header fixed-top">
 
-    <div class="branding d-flex align-items-cente">
+    <div class="branding d-flex align-items-center">
 
       <div class="container position-relative d-flex align-items-center justify-content-between">
         <a href="index.html" class="logo d-flex align-items-center">
@@ -49,7 +49,7 @@
           </ul>
           <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode" style="margin-left:auto"><i class="bi" id="themeIcon"></i></button>
       </div>
 
     </div>
@@ -95,8 +95,7 @@
                 <span class="specialty-badge">Neurology</span>
               </div>
               <h1 class="department-title">Advanced Neurological Care</h1>
-              <p class="department-intro">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere
-                cubilia curae. Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.</p>
+              <p class="department-intro">Our neurology department provides comprehensive diagnosis and treatment for a wide range of nervous system disorders. Our team of experienced specialists uses advanced diagnostic tools and evidence-based treatments to deliver personalized care for every patient.</p>
 
               <div class="key-highlights">
                 <div class="highlight-item">
@@ -147,8 +146,7 @@
             <div class="col-lg-8">
               <div class="overview-header">
                 <h3>Our Neurological Services</h3>
-                <p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Mauris blandit aliquet elit, eget
-                  tincidunt nibh pulvinar a.</p>
+                <p>Our neurological services include advanced diagnostic imaging, EEG monitoring, lumbar punctures, nerve conduction studies, and a full range of treatment options tailored to each patient's needs.</p>
               </div>
             </div>
           </div>
@@ -160,7 +158,7 @@
                   <i class="bi bi-lightning-charge"></i>
                 </div>
                 <h4>Epilepsy Treatment</h4>
-                <p>Nulla porttitor accumsan tincidunt. Cras ultricies ligula sed magna dictum porta.</p>
+                <p>Our specialists use advanced diagnostic tools including EEG monitoring and video telemetry to accurately diagnose and effectively manage all types of epilepsy, from focal to generalized seizures.</p>
               </div>
             </div>
 
@@ -170,7 +168,7 @@
                   <i class="bi bi-search"></i>
                 </div>
                 <h4>Diagnostic Imaging</h4>
-                <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis.</p>
+                <p>We offer state-of-the-art MRI, CT, and PET scanning capabilities for precise diagnosis of neurological conditions, with results interpreted by our expert radiologists.</p>
               </div>
             </div>
 
@@ -180,7 +178,7 @@
                   <i class="bi bi-heart-pulse"></i>
                 </div>
                 <h4>Stroke Prevention</h4>
-                <p>Donec sollicitudin molestie malesuada. Proin eget tortor risus cras ultricies ligula.</p>
+                <p>Our comprehensive stroke prevention program includes risk assessment, lifestyle counseling, medication management, and advanced imaging to identify and address potential risks before they become emergencies.</p>
               </div>
             </div>
 
@@ -190,7 +188,7 @@
                   <i class="bi bi-person-gear"></i>
                 </div>
                 <h4>Movement Disorders</h4>
-                <p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui.</p>
+                <p>Our movement disorder specialists provide expert diagnosis and treatment for conditions such as Parkinson's disease, essential tremor, dystonia, and other movement-related disorders.</p>
               </div>
             </div>
 
@@ -200,7 +198,7 @@
                   <i class="bi bi-moon"></i>
                 </div>
                 <h4>Sleep Disorders</h4>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor.</p>
+                <p>We diagnose and treat a wide range of sleep disorders including insomnia, sleep apnea, restless leg syndrome, and narcolepsy using advanced sleep study technology.</p>
               </div>
             </div>
 
@@ -210,7 +208,7 @@
                   <i class="bi bi-shield-check"></i>
                 </div>
                 <h4>Memory Care</h4>
-                <p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a vestibulum ac diam.</p>
+                <p>Our memory care program provides comprehensive evaluation and treatment for Alzheimer's disease, dementia, and other memory-related conditions, with a focus on maintaining quality of life.</p>
               </div>
             </div>
           </div>
@@ -227,8 +225,7 @@
             <div class="col-lg-7" data-aos="fade-left" data-aos-delay="900">
               <div class="expert-content">
                 <h3>Leading Neurological Expertise</h3>
-                <p class="lead">Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Sed porttitor
-                  lectus nibh donec rutrum congue leo eget malesuada.</p>
+                <p class="lead">Our department is led by internationally recognized neurologists and neurosurgeons who bring decades of combined experience in diagnosing and treating the most complex neurological conditions.</p>
 
                 <div class="expertise-list">
                   <div class="expertise-item">
@@ -286,11 +283,7 @@
               <span class="sitename">Salama</span>
             </a>
             <p class="brand-description">Providing exceptional healthcare services with experienced medical professionals dedicated to your well-being.</p>
-            <div class="contact-info mt-5">
-              <div class="contact-item"><i class="bi bi-geo-alt"></i><span>123 Medical Center Blvd, Health District</span></div>
-              <div class="contact-item"><i class="bi bi-telephone"></i><span>+1 (555) 987-6543</span></div>
-              <div class="contact-item"><i class="bi bi-envelope"></i><span>contact@salama.com</span></div>
-            </div>
+            <div class="contact-info mt-5"></div>
           </div>
         </div>
         <div class="col-lg-7">
@@ -309,21 +302,12 @@
               </div>
               <div class="col-6 col-lg-3">
                 <div class="nav-column">
-                  <h6>Services</h6>
+                  <h6>Our Departments</h6>
                   <nav class="footer-nav" aria-label="Footer navigation">
                     <a href="departments.html">Cardiology</a>
                     <a href="departments.html">Neurology</a>
                     <a href="departments.html">Pediatrics</a>
                     <a href="departments.html">Oncology</a>
-                  </nav>
-                </div>
-              </div>
-              <div class="col-6 col-lg-3">
-                <div class="nav-column">
-                  <h6>Account</h6>
-                  <nav class="footer-nav" aria-label="Footer navigation">
-                    <a href="login.html">Sign In</a>
-                    <a href="signup.html">Sign Up</a>
                   </nav>
                 </div>
               </div>
