@@ -24,6 +24,9 @@ Desktop.ini
 *.suo
 *.user
 
+# Screenshots
+mintty.*.png
+
 # Root
 bin/
 obj/

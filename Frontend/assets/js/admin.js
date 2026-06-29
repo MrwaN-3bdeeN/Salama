@@ -431,6 +431,19 @@ async function deleteCertificate(id) {
   catch (err) { showToast(err.message, 'error'); }
 }
 
+// ─── HELPERS ──────────────────────────────────────────────
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = String(str);
+  return div.innerHTML;
+}
+
+function escapeAttr(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 // ─── MODAL HELPERS ──────────────────────────────────────────
 let activeModal = null;
 
@@ -499,7 +512,7 @@ function statusBadge(status) {
 
 // ─── PROFILE ───────────────────────────────────────────────
 async function loadProfile() {
-  const area = document.getElementById('dashContent');
+  const area = document.getElementById('section-profile');
   try {
     const data = await Api.getMe();
     const picUrl = Api.getProfilePictureUrl(data.profilePicturePath);

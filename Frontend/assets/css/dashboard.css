@@ -69,6 +69,13 @@
 [data-theme="dark"] .modal-body .rounded{background:#252a3e!important}
 [data-theme="dark"] .modal-body .rounded strong{color:#e2e8f0}
 [data-theme="dark"] .modal-body .rounded small{color:#94a3b8}
+[data-theme="dark"] .table td{color:#cbd5e1;border-bottom-color:rgba(255,255,255,.05)}
+[data-theme="dark"] .table-hover tbody tr:hover{background:rgba(255,255,255,.03)}
+[data-theme="dark"] .badge-status{color:#e2e8f0}
+[data-theme="dark"] .booking-form .form-control,[data-theme="dark"] .booking-form .form-select{background:#252a3e;border-color:rgba(255,255,255,.1);color:#e2e8f0}
+[data-theme="dark"] .page-title{background:#1a1d2e!important}
+[data-theme="dark"] body.scrolled .header .branding{background:rgba(26,29,46,.98)}
+[data-theme="dark"] .alert-info{background:rgba(59,130,246,.15);color:#93c5fd;border-color:rgba(59,130,246,.3)}
 
 /* ─── SIDEBAR LIGHT MODE ────────────────────────────────── */
 [data-theme="light"] .dash-sidebar{background:linear-gradient(180deg,#f8f9fa 0%,#e9ecef 100%);color:#333}

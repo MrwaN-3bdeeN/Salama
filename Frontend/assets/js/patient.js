@@ -272,7 +272,7 @@ function openBookingModal(doctorId, doctorName, specName) {
         </div>
       </div>
     </div>
-    <div class="modal-backdrop fade show" onclick="closeBookingModal()"></div>`;
+    <div class="modal-backdrop fade show" onclick="if(event.target===this)closeBookingModal()"></div>`;
 
   document.body.appendChild(modal);
   document.body.classList.add('modal-open');
