@@ -50,10 +50,15 @@ function setupSignupForm() {
     btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating account...';
     msg.className = 'd-none';
     try {
+      const phoneVal = form.querySelector('[name="phone"]').value.trim();
+      const phoneInt = parseInt(phoneVal, 10);
+      if (!phoneVal || isNaN(phoneInt) || phoneInt < 100000000) {
+        throw new Error('Please enter a valid phone number (at least 9 digits).');
+      }
       const data = await Api.register({
-        name: form.name.value,
-        email: form.email.value,
-        phone: parseInt(form.phone.value),
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        phone: phoneInt,
         password: form.password.value,
         role: 'Patient'
       });

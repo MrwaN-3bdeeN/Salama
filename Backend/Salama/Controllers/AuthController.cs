@@ -19,11 +19,13 @@ namespace Salama.Controllers
     {
         private readonly AppDbContext _context;
         private readonly JWT _jwt;
+        private readonly EmailService _emailService;
 
-        public AuthController(AppDbContext context, IOptions<JWT> jwtOptions)
+        public AuthController(AppDbContext context, IOptions<JWT> jwtOptions, EmailService emailService)
         {
             _context = context;
             _jwt = jwtOptions.Value;
+            _emailService = emailService;
         }
 
         // ─── 1. REGISTER ───────────────────────────────────────────
@@ -204,6 +206,70 @@ namespace Salama.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Password changed successfully." });
+        }
+
+        // ─── 5c. SEND EMAIL VERIFICATION CODE ─────────────────────
+        [Authorize]
+        [HttpPost("send-email-verification")]
+        public async Task<IActionResult> SendEmailVerification([FromBody] SendEmailVerificationRequest request)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+                return Unauthorized(new { message = "Invalid token." });
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.NewEmail);
+            if (existingUser != null)
+                return BadRequest(new { message = "This email is already in use." });
+
+            var code = new Random().Next(100000, 999999).ToString();
+            var expiry = DateTime.UtcNow.AddMinutes(10);
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            user.VerificationCode = code;
+            user.VerificationCodeExpiry = expiry;
+            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _emailService.SendVerificationCodeAsync(request.NewEmail, code);
+                return Ok(new { message = "Verification code sent to your new email." });
+            }
+            catch
+            {
+                return BadRequest(new { message = "Failed to send verification email. Please try again." });
+            }
+        }
+
+        // ─── 5d. CHANGE EMAIL WITH VERIFICATION ────────────────────
+        [Authorize]
+        [HttpPut("change-email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+        {
+            var userId = GetUserIdFromToken();
+            if (userId == null)
+                return Unauthorized(new { message = "Invalid token." });
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            if (user.VerificationCode != request.Code || user.VerificationCodeExpiry < DateTime.UtcNow)
+                return BadRequest(new { message = "Invalid or expired verification code." });
+
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == request.NewEmail && u.Id != userId);
+            if (emailExists)
+                return BadRequest(new { message = "This email is already in use." });
+
+            user.Email = request.NewEmail;
+            user.VerificationCode = null;
+            user.VerificationCodeExpiry = null;
+            await _context.SaveChangesAsync();
+
+            var updatedUser = MapToUserResponse(user);
+            return Ok(new { message = "Email changed successfully.", user = updatedUser });
         }
 
         // ─── 6. FORGOT PASSWORD ────────────────────────────────────

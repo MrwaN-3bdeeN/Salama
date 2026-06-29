@@ -71,6 +71,24 @@ namespace Salama.Models.DTOs
         public string Email { get; set; } = null!;
     }
 
+    public class SendEmailVerificationRequest
+    {
+        [Required]
+        [EmailAddress]
+        public string NewEmail { get; set; } = null!;
+    }
+
+    public class ChangeEmailRequest
+    {
+        [Required]
+        [EmailAddress]
+        public string NewEmail { get; set; } = null!;
+
+        [Required]
+        [MinLength(6)]
+        public string Code { get; set; } = null!;
+    }
+
     public class AuthResponse
     {
         public string Token { get; set; } = null!;

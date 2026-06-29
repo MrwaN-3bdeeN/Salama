@@ -57,6 +57,8 @@ const Api = {
   getMe() { return this.get('/auth/me'); },
   verifyPassword(oldPassword) { return this.post('/auth/verify-password', { oldPassword }); },
   changePassword(oldPassword, newPassword) { return this.put('/auth/change-password', { oldPassword, newPassword }); },
+  sendEmailVerification(newEmail) { return this.post('/auth/send-email-verification', { newEmail }); },
+  changeEmail(newEmail, code) { return this.put('/auth/change-email', { newEmail, code }); },
 
   async uploadProfilePicture(file) {
     const formData = new FormData();

@@ -25,6 +25,10 @@ public partial class User
 
     public DateTime? RefreshTokenExpiry { get; set; }
 
+    public string? VerificationCode { get; set; }
+
+    public DateTime? VerificationCodeExpiry { get; set; }
+
     public virtual Admin? Admin { get; set; }
 
     public virtual Doctor? Doctor { get; set; }

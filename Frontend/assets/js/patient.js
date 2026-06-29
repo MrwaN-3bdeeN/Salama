@@ -550,6 +550,22 @@ async function loadProfile() {
               <div class="mt-3"><button type="submit" class="btn btn-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
             </form>
           </div>
+          <hr class="my-4">
+          <h6 class="mb-3"><i class="bi bi-envelope me-2"></i>Change Email</h6>
+          <p class="text-muted small mb-3">Current email: <strong>${escapeHtml(p.email || '')}</strong></p>
+          <div id="emailStep1">
+            <form id="sendEmailCodeForm" class="d-flex gap-2 align-items-end">
+              <div class="flex-grow-1"><label class="form-label">New Email</label><input type="email" class="form-control" id="newEmail" required></div>
+              <div><button type="submit" class="btn btn-outline-primary"><i class="bi bi-send me-1"></i>Send Code</button></div>
+            </form>
+          </div>
+          <div id="emailStep2" style="display:none">
+            <p class="text-success small mb-3"><i class="bi bi-check-circle me-1"></i>Verification code sent. Check your inbox.</p>
+            <form id="verifyEmailForm" class="d-flex gap-2 align-items-end">
+              <div class="flex-grow-1"><label class="form-label">Verification Code</label><input type="text" class="form-control" id="emailCode" placeholder="6-digit code" required maxlength="6"></div>
+              <div><button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Verify & Change</button></div>
+            </form>
+          </div>
         </div>
       </div>`;
 
@@ -625,6 +641,38 @@ async function loadProfile() {
         document.getElementById('pwdStep2').style.display = 'none';
         document.getElementById('verifyPwdForm').reset();
         document.getElementById('changePwdForm').reset();
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+      }
+    });
+
+    document.getElementById('sendEmailCodeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('profileMsg');
+      const newEmail = document.getElementById('newEmail').value.trim();
+      try {
+        await Api.sendEmailVerification(newEmail);
+        document.getElementById('emailStep1').style.display = 'none';
+        document.getElementById('emailStep2').style.display = 'block';
+        msgEl.innerHTML = '<div class="alert alert-info">Verification code sent.</div>';
+      } catch (err) {
+        msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+      }
+    });
+
+    document.getElementById('verifyEmailForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgEl = document.getElementById('profileMsg');
+      const newEmail = document.getElementById('newEmail').value.trim();
+      const code = document.getElementById('emailCode').value.trim();
+      try {
+        const result = await Api.changeEmail(newEmail, code);
+        msgEl.innerHTML = '<div class="alert alert-success">Email changed successfully.</div>';
+        document.getElementById('emailStep1').style.display = 'block';
+        document.getElementById('emailStep2').style.display = 'none';
+        document.getElementById('sendEmailCodeForm').reset();
+        document.getElementById('verifyEmailForm').reset();
+        if (result.user) { const user = Api.getUser(); if (user) { user.email = result.user.email; localStorage.setItem('clinic_user', JSON.stringify(user)); } }
       } catch (err) {
         msgEl.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
       }
