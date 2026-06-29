@@ -428,6 +428,16 @@ async function loadProfile() {
               </button>
             </div>
           </form>
+          <hr class="my-4">
+          <h6 class="mb-3"><i class="bi bi-key me-2"></i>Change Password</h6>
+          <form id="passwordForm">
+            <div class="row g-3">
+              <div class="col-md-4"><label class="form-label">Current Password</label><input type="password" class="form-control" id="oldPassword" required></div>
+              <div class="col-md-4"><label class="form-label">New Password</label><input type="password" class="form-control" id="newPassword" required minlength="6"></div>
+              <div class="col-md-4"><label class="form-label">Confirm New Password</label><input type="password" class="form-control" id="confirmPassword" required minlength="6"></div>
+            </div>
+            <div class="mt-3"><button type="submit" class="btn btn-outline-primary"><i class="bi bi-shield-lock me-1"></i>Update Password</button></div>
+          </form>
         </div>
       </div>
     `;
@@ -485,6 +495,35 @@ async function loadProfile() {
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-save me-1"></i> Save Changes';
+      }
+    });
+
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById('profileMsg');
+      const oldPwd = document.getElementById('oldPassword').value;
+      const newPwd = document.getElementById('newPassword').value;
+      const confirmPwd = document.getElementById('confirmPassword').value;
+
+      if (newPwd !== confirmPwd) {
+        msg.innerHTML = '<div class="alert alert-danger">New passwords do not match.</div>';
+        msg.classList.remove('d-none');
+        return;
+      }
+      if (newPwd.length < 6) {
+        msg.innerHTML = '<div class="alert alert-danger">New password must be at least 6 characters.</div>';
+        msg.classList.remove('d-none');
+        return;
+      }
+
+      try {
+        await Api.changePassword(oldPwd, newPwd);
+        msg.innerHTML = '<div class="alert alert-success">Password changed successfully.</div>';
+        msg.classList.remove('d-none');
+        e.target.reset();
+      } catch (err) {
+        msg.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message)}</div>`;
+        msg.classList.remove('d-none');
       }
     });
   } catch (err) {
